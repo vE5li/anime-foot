@@ -78,6 +78,7 @@
 
 * Regression: assertion in `url-mode.c` when activating a second URL
   via `show-urls-persistent` ([#2000][2000]).
+* Build failure (`srgb.h` not found) when doing a parallel build.
 
 [2000]: https://codeberg.org/dnkl/foot/issues/2000
 
