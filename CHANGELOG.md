@@ -62,6 +62,10 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* UTF-8 error recovery now discards fewer bytes.
+
+
 ### Deprecated
 ### Removed
 ### Fixed
