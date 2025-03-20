@@ -69,6 +69,13 @@
 ### Deprecated
 ### Removed
 ### Fixed
+
+* Regression: assertion in `url-mode.c` when activating a second URL
+  via `show-urls-persistent` ([#2000][2000]).
+
+[2000]: https://codeberg.org/dnkl/foot/issues/2000
+
+
 ### Security
 ### Contributors
 
