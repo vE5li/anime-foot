@@ -64,6 +64,12 @@
 ### Changed
 
 * UTF-8 error recovery now discards fewer bytes.
+* Auto-calculated dimmed and brightened colors (e.g. when custom dim
+  colors has not configured) is now done by linear RGB interpolation,
+  rather than converting to HSL and adjusting the luminance
+  ([#2006][2006]).
+
+[2006]: https://codeberg.org/dnkl/foot/issues/2006
 
 
 ### Deprecated
