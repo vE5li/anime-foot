@@ -208,17 +208,17 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	background will appear thicker, and dark glyphs on a light
 	background will appear thinner.
 
-	Also be aware that many fonts have been developed on systems that
-	do not do gamma-correct blending, and may therefore look thicker
-	than intended when rendered with gamma-correct blending, since the
-	font designer set the font weight based on incorrect rendering.
-	
 	FreeType can limit the effect of the latter, with a technique
 	called stem darkening. It is only available for CFF fonts
 	(OpenType, .otf) and disabled by default (in FreeType). You can
 	enable it by setting the environment variable
 	*FREETYPE_PROPERTIES="cff:no-stem-darkening=0"* before starting
 	foot.
+	
+	Also be aware that many fonts have been developed on systems that
+	do not do gamma-correct blending, and may therefore look thicker
+	than intended when rendered with gamma-correct blending, since the
+	font designer set the font weight based on incorrect rendering.
 	
 	You may also want to enable 10-bit image buffers when
 	gamma-correct blending is enabled. Though probably only if you do
