@@ -620,6 +620,54 @@ keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
         if (seat->kbd.mod_num != XKB_MOD_INVALID)
             seat->kbd.kitty_significant |= 1 << seat->kbd.mod_num;
 
+
+        /*
+         * Create a mask of all "virtual" modifiers. Some compositors
+         * add these *in addition* to the "real" modifiers (Mod1,
+         * Mod2, etc).
+         *
+         * Since our modifier logic (both for internal shortcut
+         * processing, and e.g. the kitty keyboard protocol) makes
+         * very few assumptions on available modifiers, which keys map
+         * to which modifier etc, the presence of virtual modifiers
+         * causes various things to break.
+         *
+         * For example, if a foot shortcut is Mod1+b (i.e. Alt+b), it
+         * won't match if the compositor _also_ sets the Alt modifier
+         * (the corresponding shortcut in foot would be Alt+Mod1+b).
+         *
+         * See https://codeberg.org/dnkl/foot/issues/2009
+         *
+         * Mutter (GNOME) is known to set the virtual modifiers in
+         * addtiion to the real modifiers.
+         *
+         * As far as I know, there's no compositor that _only_ sets
+         * virtual modifiers (don't think that's even legal...?)
+         */
+        {
+            xkb_mod_index_t alt = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_ALT);
+            xkb_mod_index_t meta = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_META);
+            xkb_mod_index_t super = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_SUPER);
+            xkb_mod_index_t hyper = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_HYPER);
+            xkb_mod_index_t num_lock = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_NUM);
+            xkb_mod_index_t scroll_lock = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_SCROLL);
+            xkb_mod_index_t level_three = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_LEVEL3);
+            xkb_mod_index_t level_five = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, XKB_VMOD_NAME_LEVEL5);
+
+            xkb_mod_index_t ignore = 0;
+
+            if (alt != XKB_MOD_INVALID) ignore |= 1 << alt;
+            if (meta != XKB_MOD_INVALID) ignore |= 1 << meta;
+            if (super != XKB_MOD_INVALID) ignore |= 1 << super;
+            if (hyper != XKB_MOD_INVALID) ignore |= 1 << hyper;
+            if (num_lock != XKB_MOD_INVALID) ignore |= 1 << num_lock;
+            if (scroll_lock != XKB_MOD_INVALID) ignore |= 1 << scroll_lock;
+            if (level_three != XKB_MOD_INVALID) ignore |= 1 << level_three;
+            if (level_five != XKB_MOD_INVALID) ignore |= 1 << level_five;
+
+            seat->kbd.virtual_modifiers = ignore;
+        }
+
         seat->kbd.key_arrow_up = xkb_keymap_key_by_name(seat->kbd.xkb_keymap, "UP");
         seat->kbd.key_arrow_down = xkb_keymap_key_by_name(seat->kbd.xkb_keymap, "DOWN");
     }
@@ -1758,6 +1806,10 @@ keyboard_modifiers(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
                    uint32_t mods_locked, uint32_t group)
 {
     struct seat *seat = data;
+
+    mods_depressed &= ~seat->kbd.virtual_modifiers;
+    mods_latched &= ~seat->kbd.virtual_modifiers;
+    mods_locked &= ~seat->kbd.virtual_modifiers;
 
 #if defined(_DEBUG)
     char depressed[256];
