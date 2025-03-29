@@ -985,14 +985,12 @@ grid_resize_and_reflow(
             underline_range = underline_range_terminator = NULL;
 
         if (unlikely(col_count > 0 && coalesced_linebreaks > 0)) {
-            for (size_t apa = 0; apa < coalesced_linebreaks; apa++) {
+            for (size_t line_no = 0; line_no < coalesced_linebreaks; line_no++) {
                 /* Erase the remaining cells */
                 memset(&new_row->cells[new_col_idx], 0,
                        (new_cols - new_col_idx) * sizeof(new_row->cells[0]));
                 new_row->linebreak = true;
-
-                if (r + 1 < old_rows)
-                    line_wrap();
+                line_wrap();
             }
 
             coalesced_linebreaks = 0;

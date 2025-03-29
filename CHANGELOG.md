@@ -79,8 +79,11 @@
 * Regression: assertion in `url-mode.c` when activating a second URL
   via `show-urls-persistent` ([#2000][2000]).
 * Build failure (`srgb.h` not found) when doing a parallel build.
+* Regression: reflowing (changing the window size) removing empty
+  lines ([#2011][2011]).
 
 [2000]: https://codeberg.org/dnkl/foot/issues/2000
+[2011]: https://codeberg.org/dnkl/foot/issues/2011
 
 
 ### Security
