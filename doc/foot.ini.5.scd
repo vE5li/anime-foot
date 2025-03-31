@@ -1160,7 +1160,8 @@ Note that if *Shift* is one of the modifiers, the _key_ *must not* be
 in upper case. For example, *Control+Shift+V* will never trigger, but
 *Control+Shift+v* will.
 
-Note that *Alt* is usually called *Mod1*.
+The default key bindings all use "real" modifiers (*Mod1*, *Mod4*
+etc), but "virtual" modifiers (*Alt*, *Super* etc) are allowed.
 
 *xkbcli interactive-wayland* can be useful for finding keysym names.
 
