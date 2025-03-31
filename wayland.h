@@ -136,6 +136,8 @@ struct seat {
         xkb_mod_mask_t legacy_significant;  /* Significant modifiers for the legacy keyboard protocol */
         xkb_mod_mask_t kitty_significant;   /* Significant modifiers for the kitty keyboard protocol */
 
+        xkb_mod_mask_t virtual_modifiers;   /* Set of modifiers to completely ignore */
+
         xkb_keycode_t key_arrow_up;
         xkb_keycode_t key_arrow_down;
 

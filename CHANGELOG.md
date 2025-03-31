@@ -68,8 +68,20 @@
   colors has not configured) is now done by linear RGB interpolation,
   rather than converting to HSL and adjusting the luminance
   ([#2006][2006]).
+* Virtual modifiers in keyboard events from the compositor are now
+  supported. This works around various issues seen when running foot
+  under mutter (GNOME) ([#2009][2009]):
+  - Some key combinations generating the wrong escape sequence in the
+    kitty keyboard protocol.
+  - some of foot's default shortcuts not working (mainly those using
+    `Mod1`) out of the box.
+* Virtual modifiers (e.g. `Alt` instead of `Mod1`, `Super` instead of
+  `Mod4` etc) in key bindings are now recognized as being virtual, and
+  are automatically mapped to the corresponding real modifier. This
+  means you can use e.g. `Alt+b` instead of `Mod1+b`.
 
 [2006]: https://codeberg.org/dnkl/foot/issues/2006
+[2009]: https://codeberg.org/dnkl/foot/issues/2009
 
 
 ### Deprecated

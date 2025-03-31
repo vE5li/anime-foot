@@ -13,12 +13,21 @@
 #include "wayland.h"
 #include "xmalloc.h"
 
+struct vmod_map {
+    const char *name;
+    xkb_mod_mask_t virtual_mask;
+    xkb_mod_mask_t real_mask;
+};
+
 struct key_set {
     struct key_binding_set public;
 
     const struct config *conf;
     const struct seat *seat;
     size_t conf_ref_count;
+
+    /* Virtual to real modifier mappings */
+    struct vmod_map vmods[8];
 };
 typedef tll(struct key_set) bind_set_list_t;
 
@@ -44,6 +53,50 @@ key_binding_manager_destroy(struct key_binding_manager *mgr)
     free(mgr);
 }
 
+static void
+initialize_vmod_mappings(struct key_set *set)
+{
+    if (set->seat == NULL || set->seat->kbd.xkb_keymap == NULL)
+        return;
+
+    set->vmods[0].name = XKB_VMOD_NAME_ALT;
+    set->vmods[1].name = XKB_VMOD_NAME_HYPER;
+    set->vmods[2].name = XKB_VMOD_NAME_LEVEL3;
+    set->vmods[3].name = XKB_VMOD_NAME_LEVEL5;
+    set->vmods[4].name = XKB_VMOD_NAME_META;
+    set->vmods[5].name = XKB_VMOD_NAME_NUM;
+    set->vmods[6].name = XKB_VMOD_NAME_SCROLL;
+    set->vmods[7].name = XKB_VMOD_NAME_SUPER;
+
+    struct xkb_state *scratch_state = xkb_state_new(set->seat->kbd.xkb_keymap);
+    xassert(scratch_state != NULL);
+
+    for (size_t i = 0; i < ALEN(set->vmods); i++) {
+        xkb_mod_index_t virt_idx = xkb_keymap_mod_get_index(
+            set->seat->kbd.xkb_keymap, set->vmods[i].name);
+
+        if (virt_idx != XKB_MOD_INVALID) {
+            xkb_mod_mask_t vmask = 1 << virt_idx;
+            xkb_state_update_mask(scratch_state, vmask, 0, 0, 0, 0, 0);
+            set->vmods[i].real_mask = xkb_state_serialize_mods(
+                scratch_state, XKB_STATE_MODS_DEPRESSED) & ~vmask;
+            set->vmods[i].virtual_mask = vmask;
+
+            LOG_DBG("%s: 0x%04x -> 0x%04x",
+                    set->vmods[i].name,
+                    set->vmods[i].virtual_mask,
+                    set->vmods[i].real_mask);
+        } else {
+            set->vmods[i].virtual_mask = 0;
+            set->vmods[i].real_mask = 0;
+
+            LOG_DBG("%s: virtual modifier not available", set->vmods[i].name);
+        }
+    }
+
+    xkb_state_unref(scratch_state);
+}
+
 void
 key_binding_new_for_seat(struct key_binding_manager *mgr,
                          const struct seat *seat)
@@ -67,6 +120,7 @@ key_binding_new_for_seat(struct key_binding_manager *mgr,
         };
 
         tll_push_back(mgr->binding_sets, set);
+        initialize_vmod_mappings(&tll_back(mgr->binding_sets));
 
         LOG_DBG("new (seat): set=%p, seat=%p, conf=%p, ref-count=1",
                 (void *)&tll_back(mgr->binding_sets),
@@ -107,6 +161,7 @@ key_binding_new_for_conf(struct key_binding_manager *mgr,
         };
 
         tll_push_back(mgr->binding_sets, set);
+        initialize_vmod_mappings(&tll_back(mgr->binding_sets));
 
         load_keymap(&tll_back(mgr->binding_sets));
 
@@ -405,18 +460,35 @@ sort_binding_list(key_binding_list_t *list)
 }
 
 static xkb_mod_mask_t
-mods_to_mask(const struct seat *seat, const config_modifier_list_t *mods)
+mods_to_mask(const struct seat *seat,
+             const struct vmod_map *vmods, size_t vmod_count,
+             const config_modifier_list_t *mods)
 {
     xkb_mod_mask_t mask = 0;
     tll_foreach(*mods, it) {
-        xkb_mod_index_t idx = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, it->item);
+        const xkb_mod_index_t idx = xkb_keymap_mod_get_index(seat->kbd.xkb_keymap, it->item);
 
         if (idx == XKB_MOD_INVALID) {
             LOG_ERR("%s: invalid modifier name", it->item);
             continue;
         }
 
-        mask |= 1 << idx;
+        xkb_mod_mask_t mod = 1 << idx;
+
+        /* Check if this is a virtual modifier, and if so, use the
+           real modifier it maps to instead */
+        for (size_t i = 0; i < vmod_count; i++) {
+            if (vmods[i].virtual_mask == mod) {
+                mask |= vmods[i].real_mask;
+                mod = 0;
+
+                LOG_DBG("%s: virtual modifier, mapped to 0x%04x",
+                        it->item, vmods[i].real_mask);
+                break;
+            }
+        }
+
+        mask |= mod;
     }
 
     return mask;
@@ -429,7 +501,8 @@ convert_key_binding(struct key_set *set,
 {
     const struct seat *seat = set->seat;
 
-    xkb_mod_mask_t mods = mods_to_mask(seat, &conf_binding->modifiers);
+    xkb_mod_mask_t mods = mods_to_mask(
+        seat, set->vmods, ALEN(set->vmods), &conf_binding->modifiers);
     xkb_keysym_t sym = maybe_repair_key_combo(seat, conf_binding->k.sym, mods);
 
     struct key_binding binding = {
@@ -487,7 +560,7 @@ convert_mouse_binding(struct key_set *set,
         .type = MOUSE_BINDING,
         .action = conf_binding->action,
         .aux = &conf_binding->aux,
-        .mods = mods_to_mask(set->seat, &conf_binding->modifiers),
+        .mods = mods_to_mask(set->seat, set->vmods, ALEN(set->vmods), &conf_binding->modifiers),
         .m = {
             .button = conf_binding->m.button,
             .count = conf_binding->m.count,
@@ -528,7 +601,8 @@ load_keymap(struct key_set *set)
     convert_mouse_bindings(set);
 
     set->public.selection_overrides = mods_to_mask(
-        set->seat, &set->conf->mouse.selection_override_modifiers);
+        set->seat, set->vmods, ALEN(set->vmods),
+        &set->conf->mouse.selection_override_modifiers);
 }
 
 void
@@ -538,8 +612,10 @@ key_binding_load_keymap(struct key_binding_manager *mgr,
     tll_foreach(mgr->binding_sets, it) {
         struct key_set *set = &it->item;
 
-        if (set->seat == seat)
+        if (set->seat == seat) {
+            initialize_vmod_mappings(set);
             load_keymap(set);
+        }
     }
 }
 
