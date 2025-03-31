@@ -68,18 +68,13 @@
   colors has not configured) is now done by linear RGB interpolation,
   rather than converting to HSL and adjusting the luminance
   ([#2006][2006]).
-* XKB: virtual modifiers in keyboard events from the compositor are
-  now ignored. This works around various issues seen when running foot
+* Virtual modifiers in keyboard events from the compositor are now
+  supported. This works around various issues seen when running foot
   under mutter (GNOME) ([#2009][2009]):
   - Some key combinations generating the wrong escape sequence in the
     kitty keyboard protocol.
   - some of foot's default shortcuts not working (mainly those using
     `Mod1`) out of the box.
-  - **Note: if you have custom key bindings in `foot.ini` that
-    includes one or more of the `Alt`, `Meta`, `Super`, `Hyper`,
-    `NumLock`, `ScrollLock`, `LevelThree` or `LevelFive` modifiers,
-    you need to update them; i.e. remove the virtual modifier(s),
-    leaving only the real modifiers (`Mod1`, `Mod2` etc).**
 * Virtual modifiers (e.g. `Alt` instead of `Mod1`, `Super` instead of
   `Mod4` etc) in key bindings are now recognized as being virtual, and
   are automatically mapped to the corresponding real modifier. This
