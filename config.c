@@ -3446,39 +3446,46 @@ config_load(struct config *conf, const char *conf_path,
     tokenize_cmdline("xdg-open ${url}", &conf->url.launch.argv.args);
 
     {
-        /*
-         * Based on https://gist.github.com/gruber/249502, but modified:
-         *  - Do not allow {} at all
-         *  - Do allow matched []
-         */
-        const char *url_regex_string =
+    const char *url_regex_string =
+        "("
             "("
-                "("
-                    "[a-z][[:alnum:]-]+:"       // protocol
-                    "("
-                        "/{1,3}|[a-z0-9%]"     // slashes (what's the OR part for?)
-                    ")"
-                    "|"
-                    "www[:digit:]{0,3}[.]"
-                    //"|"
-                    //"[a-z0-9.\\-]+[.][a-z]{2,4}/"  /* "looks like domain name followed by a slash" - remove? */
-                ")"
-                "("
-                    "[^[:space:](){}<>]+"
-                    "|"
-                    "\\(([^[:space:](){}<>]+|(\\([^[:space:](){}<>]+\\)))*\\)"
-                    "|"
-                    "\\[([^]\\[[:space:](){}<>]+|(\\[[^]\\[[:space:](){}<>]+\\]))*\\]"
-                ")+"
-                "("
-                    "\\(([^[:space:](){}<>]+|(\\([^[:space:](){}<>]+\\)))*\\)"
-                    "|"
-                    "\\[([^]\\[[:space:](){}<>]+|(\\[[^]\\[[:space:](){}<>]+\\]))*\\]"
-                    "|"
-                    "[^]\\[[:space:]`!(){};:'\".,<>?«»“”‘’]"
-                ")"
+                "(https?://|mailto:|ftp://|file:|ssh:|ssh://|git://|tel:|magnet:|ipfs://|ipns://|gemini://|gopher://|news:)"
+                "|"
+                "www\\."
             ")"
-        ;
+            "("
+                /* Safe + reserved + some unsafe characters parenthesis and double quotes omitted (we only allow them when balanced) */
+                "[0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]+"
+                "|"
+                 /* Balanced "(...)". Content is same as above, plus all _other_ characters we require to be balanced */
+                "\\([]\\[\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\)"
+                "|"
+                 /* Balanced "[...]". Content is same as above, plus all _other_ characters we require to be balanced */
+                "\\[[\\(\\)\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\]"
+                "|"
+                 /* Balanced '"..."'. Content is same as above, plus all _other_ characters we require to be balanced */
+                "\"[]\\[\\(\\)0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\""
+                "|"
+                 /* Balanced "'...'". Content is same as above, plus all _other_ characters we require to be balanced */
+                "'[]\\[\\(\\)0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]*'"
+            ")+"
+            "("
+                /* Same as above, except :?!,;. are excluded */
+                "[0-9a-zA-Z/#@$&*+=~_%^\\-]"
+                "|"
+                 /* Balanced "(...)". Content is same as above, plus all _other_ characters we require to be balanced */
+                "\\([]\\[\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\)"
+                "|"
+                 /* Balanced "[...]". Content is same as above, plus all _other_ characters we require to be balanced */
+                "\\[[\\(\\)\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\]"
+                "|"
+                 /* Balanced '"..."'. Content is same as above, plus all _other_ characters we require to be balanced */
+                "\"[]\\[\\(\\)0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\""
+                "|"
+                 /* Balanced "'...'". Content is same as above, plus all _other_ characters we require to be balanced */
+                "'[]\\[\\(\\)0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]*'"
+            ")"
+        ")";
 
         int r = regcomp(&conf->url.preg, url_regex_string, REG_EXTENDED);
         xassert(r == 0);

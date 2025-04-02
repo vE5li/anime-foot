@@ -79,9 +79,14 @@
   `Mod4` etc) in key bindings are now recognized as being virtual, and
   are automatically mapped to the corresponding real modifier. This
   means you can use e.g. `Alt+b` instead of `Mod1+b`.
+* Default URL regex changed to a much more strict variant
+  ([#2016][2016]). You can manually set the [old
+  one](https://codeberg.org/dnkl/foot/src/tag/1.21.0/foot.ini#L72), if
+  you prefer it over the new regex.
 
 [2006]: https://codeberg.org/dnkl/foot/issues/2006
 [2009]: https://codeberg.org/dnkl/foot/issues/2009
+[2016]: https://codeberg.org/dnkl/foot/issues/2016
 
 
 ### Deprecated
