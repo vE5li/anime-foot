@@ -2280,7 +2280,7 @@ is_top_left(const struct terminal *term, int x, int y)
 {
     int csd_border_size = term->conf->csd.border_width;
     return (
-        (!term->window->is_tiled_top && !term->window->is_tiled_left) &&
+        (!term->window->is_constrained_top && !term->window->is_constrained_left) &&
         ((term->active_surface == TERM_SURF_BORDER_LEFT && y < 10 * term->scale) ||
          (term->active_surface == TERM_SURF_BORDER_TOP && x < (10 + csd_border_size) * term->scale)));
 }
@@ -2290,7 +2290,7 @@ is_top_right(const struct terminal *term, int x, int y)
 {
     int csd_border_size = term->conf->csd.border_width;
     return (
-        (!term->window->is_tiled_top && !term->window->is_tiled_right) &&
+        (!term->window->is_constrained_top && !term->window->is_constrained_right) &&
         ((term->active_surface == TERM_SURF_BORDER_RIGHT && y < 10 * term->scale) ||
          (term->active_surface == TERM_SURF_BORDER_TOP && x > term->width + 1 * csd_border_size * term->scale - 10 * term->scale)));
 }
@@ -2301,7 +2301,7 @@ is_bottom_left(const struct terminal *term, int x, int y)
     int csd_title_size = term->conf->csd.title_height;
     int csd_border_size = term->conf->csd.border_width;
     return (
-        (!term->window->is_tiled_bottom && !term->window->is_tiled_left) &&
+        (!term->window->is_constrained_bottom && !term->window->is_constrained_left) &&
         ((term->active_surface == TERM_SURF_BORDER_LEFT && y > csd_title_size * term->scale + term->height) ||
          (term->active_surface == TERM_SURF_BORDER_BOTTOM && x < (10 + csd_border_size) * term->scale)));
 }
@@ -2312,7 +2312,7 @@ is_bottom_right(const struct terminal *term, int x, int y)
     int csd_title_size = term->conf->csd.title_height;
     int csd_border_size = term->conf->csd.border_width;
     return (
-        (!term->window->is_tiled_bottom && !term->window->is_tiled_right) &&
+        (!term->window->is_constrained_bottom && !term->window->is_constrained_right) &&
         ((term->active_surface == TERM_SURF_BORDER_RIGHT && y > csd_title_size * term->scale + term->height) ||
          (term->active_surface == TERM_SURF_BORDER_BOTTOM && x > term->width + 1 * csd_border_size * term->scale - 10 * term->scale)));
 }
@@ -2324,10 +2324,23 @@ xcursor_for_csd_border(struct terminal *term, int x, int y)
     else if (is_top_right(term, x, y))                        return CURSOR_SHAPE_TOP_RIGHT_CORNER;
     else if (is_bottom_left(term, x, y))                      return CURSOR_SHAPE_BOTTOM_LEFT_CORNER;
     else if (is_bottom_right(term, x, y))                     return CURSOR_SHAPE_BOTTOM_RIGHT_CORNER;
-    else if (term->active_surface == TERM_SURF_BORDER_LEFT)   return CURSOR_SHAPE_LEFT_SIDE;
-    else if (term->active_surface == TERM_SURF_BORDER_RIGHT)  return CURSOR_SHAPE_RIGHT_SIDE;
-    else if (term->active_surface == TERM_SURF_BORDER_TOP)    return CURSOR_SHAPE_TOP_SIDE;
-    else if (term->active_surface == TERM_SURF_BORDER_BOTTOM) return CURSOR_SHAPE_BOTTOM_SIDE;
+
+    else if (term->active_surface == TERM_SURF_BORDER_LEFT)
+        return !term->window->is_constrained_left
+            ? CURSOR_SHAPE_LEFT_SIDE : CURSOR_SHAPE_LEFT_PTR;
+
+    else if (term->active_surface == TERM_SURF_BORDER_RIGHT)
+        return !term->window->is_constrained_right
+            ? CURSOR_SHAPE_RIGHT_SIDE : CURSOR_SHAPE_LEFT_PTR;
+
+    else if (term->active_surface == TERM_SURF_BORDER_TOP)
+        return !term->window->is_constrained_top
+            ? CURSOR_SHAPE_TOP_SIDE : CURSOR_SHAPE_LEFT_PTR;
+
+    else if (term->active_surface == TERM_SURF_BORDER_BOTTOM)
+        return !term->window->is_constrained_bottom
+            ? CURSOR_SHAPE_BOTTOM_SIDE : CURSOR_SHAPE_LEFT_PTR;
+
     else {
         BUG("Unreachable");
         return CURSOR_SHAPE_NONE;
@@ -3095,15 +3108,8 @@ wl_pointer_button(void *data, struct wl_pointer *wl_pointer,
     case TERM_SURF_BORDER_RIGHT:
     case TERM_SURF_BORDER_TOP:
     case TERM_SURF_BORDER_BOTTOM: {
-        static const enum xdg_toplevel_resize_edge map[] = {
-            [TERM_SURF_BORDER_LEFT] = XDG_TOPLEVEL_RESIZE_EDGE_LEFT,
-            [TERM_SURF_BORDER_RIGHT] = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT,
-            [TERM_SURF_BORDER_TOP] = XDG_TOPLEVEL_RESIZE_EDGE_TOP,
-            [TERM_SURF_BORDER_BOTTOM] = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM,
-        };
-
         if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) {
-            enum xdg_toplevel_resize_edge resize_type;
+            enum xdg_toplevel_resize_edge resize_type = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
             int x = seat->mouse.x;
             int y = seat->mouse.y;
@@ -3116,11 +3122,36 @@ wl_pointer_button(void *data, struct wl_pointer *wl_pointer,
                 resize_type = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
             else if (is_bottom_right(term, x, y))
                 resize_type = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
-            else
-                resize_type = map[term->active_surface];
+            else {
+                if (term->active_surface == TERM_SURF_BORDER_LEFT &&
+                    !term->window->is_constrained_left)
+                {
+                    resize_type = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
+                }
 
-            xdg_toplevel_resize(
-                term->window->xdg_toplevel, seat->wl_seat, serial, resize_type);
+                else if (term->active_surface == TERM_SURF_BORDER_RIGHT &&
+                    !term->window->is_constrained_right)
+                {
+                    resize_type = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
+                }
+
+                else if (term->active_surface == TERM_SURF_BORDER_TOP &&
+                    !term->window->is_constrained_top)
+                {
+                    resize_type = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
+                }
+
+                else if (term->active_surface == TERM_SURF_BORDER_BOTTOM &&
+                    !term->window->is_constrained_bottom)
+                {
+                    resize_type = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
+                }
+            }
+
+            if (resize_type != XDG_TOPLEVEL_RESIZE_EDGE_NONE) {
+                xdg_toplevel_resize(
+                    term->window->xdg_toplevel, seat->wl_seat, serial, resize_type);
+            }
         }
         return;
     }

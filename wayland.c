@@ -852,6 +852,10 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
     bool is_tiled_bottom = false;
     bool is_tiled_left = false;
     bool is_tiled_right = false;
+    bool is_constrained_top = false;
+    bool is_constrained_bottom = false;
+    bool is_constrained_left = false;
+    bool is_constrained_right = false;
     bool is_suspended UNUSED = false;
 
 #if defined(LOG_ENABLE_DBG) && LOG_ENABLE_DBG
@@ -869,6 +873,12 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
         [XDG_TOPLEVEL_STATE_TILED_BOTTOM] = "tiled:bottom",
 #if defined(XDG_TOPLEVEL_STATE_SUSPENDED_SINCE_VERSION)  /* wayland-protocols >= 1.32 */
         [XDG_TOPLEVEL_STATE_SUSPENDED] = "suspended",
+#endif
+#if defined(XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT_SINCE_VERSION)
+        [XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT] = "constrained:left",
+        [XDG_TOPLEVEL_STATE_CONSTRAINED_RIGHT] = "constrained:right",
+        [XDG_TOPLEVEL_STATE_CONSTRAINED_TOP] = "constrained:top",
+        [XDG_TOPLEVEL_STATE_CONSTRAINED_BOTTOM] = "constrained:bottom",
 #endif
     };
 #endif
@@ -889,10 +899,10 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
         case XDG_TOPLEVEL_STATE_SUSPENDED:    is_suspended = true; break;
 #endif
 #if defined(XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT_SINCE_VERSION)
-        case XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT: is_tiled_left = true; break;
-        case XDG_TOPLEVEL_STATE_CONSTRAINED_RIGHT: is_tiled_right = true; break;
-        case XDG_TOPLEVEL_STATE_CONSTRAINED_TOP: is_tiled_top = true; break;
-        case XDG_TOPLEVEL_STATE_CONSTRAINED_BOTTOM: is_tiled_bottom = true; break;
+        case XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT: is_constrained_left = true; break;
+        case XDG_TOPLEVEL_STATE_CONSTRAINED_RIGHT: is_constrained_right = true; break;
+        case XDG_TOPLEVEL_STATE_CONSTRAINED_TOP: is_constrained_top = true; break;
+        case XDG_TOPLEVEL_STATE_CONSTRAINED_BOTTOM: is_constrained_bottom = true; break;
 #endif
         }
 
@@ -933,6 +943,10 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
     win->configure.is_tiled_bottom = is_tiled_bottom;
     win->configure.is_tiled_left = is_tiled_left;
     win->configure.is_tiled_right = is_tiled_right;
+    win->configure.is_constrained_top = is_constrained_top;
+    win->configure.is_constrained_bottom = is_constrained_bottom;
+    win->configure.is_constrained_left = is_constrained_left;
+    win->configure.is_constrained_right = is_constrained_right;
     win->configure.width = width;
     win->configure.height = height;
 }
@@ -1056,14 +1070,22 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
     win->is_maximized = win->configure.is_maximized;
     win->is_fullscreen = win->configure.is_fullscreen;
     win->is_resizing = win->configure.is_resizing;
+
     win->is_tiled_top = win->configure.is_tiled_top;
     win->is_tiled_bottom = win->configure.is_tiled_bottom;
     win->is_tiled_left = win->configure.is_tiled_left;
     win->is_tiled_right = win->configure.is_tiled_right;
+
+    win->is_constrained_top = win->configure.is_constrained_top;
+    win->is_constrained_bottom = win->configure.is_constrained_bottom;
+    win->is_constrained_left = win->configure.is_constrained_left;
+    win->is_constrained_right = win->configure.is_constrained_right;
+
     win->is_tiled = (win->is_tiled_top ||
                      win->is_tiled_bottom ||
                      win->is_tiled_left ||
                      win->is_tiled_right);
+
     win->csd_mode = win->configure.csd_mode;
 
     bool enable_csd = win->csd_mode == CSD_YES && !win->is_fullscreen;
@@ -1239,13 +1261,23 @@ handle_global(void *data, struct wl_registry *registry,
             return;
 
         /*
-         * We *require* version 1, but _can_ use version 5. Version 2
-         * adds 'tiled' window states. We use that information to
-         * restore the window size when window is un-tiled. Version 5
-         * adds 'wm_capabilities'. We use that information to draw
-         * window decorations.
+         * We *require* version 1, but _can_ use version 2, 5 or 7, if
+         * available.
+         *
+         * Version 2 adds 'tiled' window states. We use this
+         * information to restore the window size when window is
+         * un-tiled.
+         *
+         * Version 5 adds 'wm_capabilities'. We use this information
+         * to draw window decorations.
+         *
+         * Version 7 adds 'constrained' window states. We use this
+         * information to determine whether to allow window resize
+         * (via CSDs) or not.
          */
-#if defined(XDG_TOPLEVEL_WM_CAPABILITIES_SINCE_VERSION)
+#if defined(XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT_SINCE_VERSION)
+        const uint32_t preferred = XDG_TOPLEVEL_STATE_CONSTRAINED_LEFT_SINCE_VERSION;
+#elif defined(XDG_TOPLEVEL_WM_CAPABILITIES_SINCE_VERSION)
         const uint32_t preferred = XDG_TOPLEVEL_WM_CAPABILITIES_SINCE_VERSION;
 #elif defined(XDG_TOPLEVEL_STATE_TILED_LEFT_SINCE_VERSION)
         const uint32_t preferred = XDG_TOPLEVEL_STATE_TILED_LEFT_SINCE_VERSION;

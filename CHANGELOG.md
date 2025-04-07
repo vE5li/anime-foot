@@ -61,6 +61,12 @@
 
 ## Unreleased
 ### Added
+
+* Support for toplevel edge constraints. When the compositor indicates
+  the toplevel has edge constraints, foot will not allow the window to
+  be resized (via CSDs) in the constrained directions.
+
+
 ### Changed
 
 * UTF-8 error recovery now discards fewer bytes.
@@ -83,6 +89,8 @@
   ([#2016][2016]). You can manually set the [old
   one](https://codeberg.org/dnkl/foot/src/tag/1.21.0/foot.ini#L72), if
   you prefer it over the new regex.
+* A tiled window can now be resized in the corners (via CSDs), unless
+  the compositor has indicated the toplevel has edge constraints.
 
 [2006]: https://codeberg.org/dnkl/foot/issues/2006
 [2009]: https://codeberg.org/dnkl/foot/issues/2009

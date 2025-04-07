@@ -402,6 +402,12 @@ struct wl_window {
     bool is_tiled_left;
     bool is_tiled_right;
     bool is_tiled;  /* At least one of is_tiled_{top,bottom,left,right} is true */
+
+    bool is_constrained_top;
+    bool is_constrained_bottom;
+    bool is_constrained_left;
+    bool is_constrained_right;
+
     struct {
         int width;
         int height;
@@ -409,10 +415,17 @@ struct wl_window {
         bool is_fullscreen:1;
         bool is_maximized:1;
         bool is_resizing:1;
+
         bool is_tiled_top:1;
         bool is_tiled_bottom:1;
         bool is_tiled_left:1;
         bool is_tiled_right:1;
+
+        bool is_constrained_top:1;
+        bool is_constrained_bottom:1;
+        bool is_constrained_left:1;
+        bool is_constrained_right:1;
+
         enum csd_mode csd_mode;
     } configure;
 
