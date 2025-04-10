@@ -65,6 +65,10 @@
 * Support for toplevel edge constraints. When the compositor indicates
   the toplevel has edge constraints, foot will not allow the window to
   be resized (via CSDs) in the constrained directions.
+* Virtual modifiers (e.g. `Alt` instead of `Mod1`, `Super` instead of
+  `Mod4` etc) in key bindings are now recognized as being virtual, and
+  are automatically mapped to the corresponding real modifier. This
+  means you can use e.g. `Alt+b` instead of `Mod1+b`.
 
 
 ### Changed
@@ -81,10 +85,6 @@
     kitty keyboard protocol.
   - some of foot's default shortcuts not working (mainly those using
     `Mod1`) out of the box.
-* Virtual modifiers (e.g. `Alt` instead of `Mod1`, `Super` instead of
-  `Mod4` etc) in key bindings are now recognized as being virtual, and
-  are automatically mapped to the corresponding real modifier. This
-  means you can use e.g. `Alt+b` instead of `Mod1+b`.
 * Default URL regex changed to a much more strict variant
   ([#2016][2016]). You can manually set the [old
   one](https://codeberg.org/dnkl/foot/src/tag/1.21.0/foot.ini#L72), if
