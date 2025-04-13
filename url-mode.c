@@ -347,6 +347,9 @@ regex_detected(const struct terminal *term, enum url_action action,
                 wc_count = composed->count;
             }
 
+            else if (wc[0] >= CELL_SPACER)
+                continue;
+
             /* Convert wide character to utf8 */
             for (size_t i = 0; i < wc_count; i++) {
                 char buf[16];
@@ -354,6 +357,7 @@ regex_detected(const struct terminal *term, enum url_action action,
 
                 if (char_len == (size_t)-1)
                     continue;
+
 
                 for (size_t j = 0; j < char_len; j++) {
                     const size_t requires_size = vline->len + char_len;
@@ -411,9 +415,9 @@ regex_detected(const struct terminal *term, enum url_action action,
             const size_t end = start + mlen;
 
             LOG_DBG(
-                "regex match at row %d: %.*srow/col = %dx%d",
+                "regex match at row %d: %.*s (%zu bytes), row/col = %dx%d",
                 matches[1].rm_so, (int)mlen, &search_string[matches[1].rm_so],
-                v->map[start].row, v->map[start].col);
+                mlen, v->map[start].row, v->map[start].col);
 
             tll_push_back(
                 *urls,

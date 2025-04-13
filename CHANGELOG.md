@@ -106,9 +106,12 @@
 * Build failure (`srgb.h` not found) when doing a parallel build.
 * Regression: reflowing (changing the window size) removing empty
   lines ([#2011][2011]).
+* `url/regex-copy` not handling double-width characters correctly
+  ([#2027][2027]).
 
 [2000]: https://codeberg.org/dnkl/foot/issues/2000
 [2011]: https://codeberg.org/dnkl/foot/issues/2011
+[2027]: https://codeberg.org/dnkl/foot/issues/2027
 
 
 ### Security
