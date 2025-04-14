@@ -419,6 +419,10 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	multithreading. Default: the number of available logical CPUs
 	(including SMT). Note that this is not always the best value. In
 	some cases, the number of physical _cores_ is better.
+	
+	In case you have a ridiculous amount of cores and/or threads,
+	consider limiting the number of *workers*, since foot cannot
+	parallelize more than the number of visible rows.
 
 *utmp-helper*
 	Path to utmp logging helper binary.
