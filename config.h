@@ -167,8 +167,6 @@ struct config {
 
     enum { STARTUP_WINDOWED, STARTUP_MAXIMIZED, STARTUP_FULLSCREEN } startup_mode;
 
-    enum { ALPHA_MODE_DEFAULT, ALPHA_MODE_MATCHING, ALPHA_MODE_ALL } alpha_mode;
-
     bool dpi_aware;
     enum {GAMMA_CORRECT_DISABLED,
           GAMMA_CORRECT_ENABLED,
@@ -259,6 +257,12 @@ struct config {
 
         uint32_t dim[8];
         uint32_t sixel[16];
+
+        enum {
+            ALPHA_MODE_DEFAULT,
+            ALPHA_MODE_MATCHING,
+            ALPHA_MODE_ALL
+        } alpha_mode;
 
         struct {
             uint32_t fg;

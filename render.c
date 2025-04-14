@@ -605,13 +605,8 @@ cursor_colors_for_cell(const struct terminal *term, const struct cell *cell,
     if (term->colors.cursor_fg >> 31)
         *text_color = color_hex_to_pixman(term->colors.cursor_fg, gamma_correct);
     else {
+        xassert(bg->alpha == 0xffff);
         *text_color = *bg;
-
-        if (unlikely(text_color->alpha != 0xffff)) {
-            /* The *only* color that can have transparency is the
-             * default background color */
-            *text_color = color_hex_to_pixman(term->colors.bg, gamma_correct);
-        }
     }
 
     if (text_color->red == cursor_color->red &&
@@ -749,65 +744,58 @@ render_cell(struct terminal *term, pixman_image_t *pix,
             _bg = swap;
         }
 
-        else if (cell->attrs.bg_src == COLOR_DEFAULT) {
-            if (term->window->is_fullscreen) {
-                /*
-                 * Note: disable transparency when fullscreened.
-                 *
-                 * This is because the wayland protocol mandates no
-                 * screen content is shown behind the fullscreened
-                 * window.
-                 *
-                 * The _intent_ of the specification is that a black
-                 * (or other static color) should be used as
-                 * background.
-                 *
-                 * There's a bit of gray area however, and some
-                 * compositors have chosen to interpret the
-                 * specification in a way that allows wallpapers to be
-                 * seen through a fullscreen window.
-                 *
-                 * Given that a) the intent of the specification, and
-                 * b) we don't know what the compositor will do, we
-                 * simply disable transparency while in fullscreen.
-                 *
-                 * To see why, consider what happens if we keep our
-                 * transparency. For example, if the background color
-                 * is white, and alpha is 0.5, then the window will be
-                 * drawn in a shade of gray while fullscreened.
-                 *
-                 * See
-                 * https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/116
-                 * for a discussion on whether transparent, fullscreen
-                 * windows should be allowed in some way or not.
-                 *
-                 * NOTE: if changing this, also update render_margin()
-                 */
-                xassert(alpha == 0xffff);
-            } else {
-                alpha = term->colors.alpha;
-            }
-        }
-
-        if (!term->window->is_fullscreen) {
-            switch (term->conf->alpha_mode) {
-                case ALPHA_MODE_DEFAULT: {
-                    if (cell->attrs.bg_src == COLOR_DEFAULT) {
-                        alpha = term->colors.alpha;
-                    }
-                    break;
-                }
-                case ALPHA_MODE_MATCHING: {
-                    if (cell->attrs.bg == term->colors.bg) {
-                        alpha = term->colors.alpha;
-                    }
-                    break;
-                }
-                case ALPHA_MODE_ALL: {
+        if (!term->window->is_fullscreen && term->colors.alpha != 0xffff) {
+            switch (term->conf->colors.alpha_mode) {
+            case ALPHA_MODE_DEFAULT: {
+                if (cell->attrs.bg_src == COLOR_DEFAULT) {
                     alpha = term->colors.alpha;
-                    break;
                 }
+                break;
             }
+
+            case ALPHA_MODE_MATCHING: {
+                if (cell->attrs.bg == term->colors.bg)
+                    alpha = term->colors.alpha;
+                break;
+            }
+
+            case ALPHA_MODE_ALL: {
+                alpha = term->colors.alpha;
+                break;
+            }
+            }
+        } else {
+            /*
+             * Note: disable transparency when fullscreened.
+             *
+             * This is because the wayland protocol mandates no screen
+             * content is shown behind the fullscreened window.
+             *
+             * The _intent_ of the specification is that a black (or
+             * other static color) should be used as background.
+             *
+             * There's a bit of gray area however, and some
+             * compositors have chosen to interpret the specification
+             * in a way that allows wallpapers to be seen through a
+             * fullscreen window.
+             *
+             * Given that a) the intent of the specification, and b)
+             * we don't know what the compositor will do, we simply
+             * disable transparency while in fullscreen.
+             *
+             * To see why, consider what happens if we keep our
+             * transparency. For example, if the background color is
+             * white, and alpha is 0.5, then the window will be drawn
+             * in a shade of gray while fullscreened.
+             *
+             * See
+             * https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/116
+             * for a discussion on whether transparent, fullscreen
+             * windows should be allowed in some way or not.
+             *
+             * NOTE: if changing this, also update render_margin()
+             */
+            xassert(alpha == 0xffff);
         }
     }
 
@@ -1012,8 +1000,10 @@ render_cell(struct terminal *term, pixman_image_t *pix,
         mtx_unlock(&term->render.workers.lock);
     }
 
-    if (unlikely(has_cursor && term->cursor_style == CURSOR_BLOCK && term->kbd_focus))
-        draw_cursor(term, cell, font, pix, &fg, &bg, x, y, cell_cols);
+    if (unlikely(has_cursor && term->cursor_style == CURSOR_BLOCK && term->kbd_focus)) {
+        const pixman_color_t bg_without_alpha = color_hex_to_pixman(_bg, gamma_correct);
+        draw_cursor(term, cell, font, pix, &fg, &bg_without_alpha, x, y, cell_cols);
+    }
 
     if (cell->wc == 0 || cell->wc >= CELL_SPACER || cell->wc == U'\t' ||
         (unlikely(cell->attrs.conceal) && !is_selected))
@@ -1161,8 +1151,10 @@ render_cell(struct terminal *term, pixman_image_t *pix,
     }
 
 draw_cursor:
-    if (has_cursor && (term->cursor_style != CURSOR_BLOCK || !term->kbd_focus))
-        draw_cursor(term, cell, font, pix, &fg, &bg, x, y, cell_cols);
+    if (has_cursor && (term->cursor_style != CURSOR_BLOCK || !term->kbd_focus)) {
+        const pixman_color_t bg_without_alpha = color_hex_to_pixman(_bg, gamma_correct);
+        draw_cursor(term, cell, font, pix, &fg, &bg_without_alpha, x, y, cell_cols);
+    }
 
     pixman_image_set_clip_region32(pix, NULL);
     return cell_cols;

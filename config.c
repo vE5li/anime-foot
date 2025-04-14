@@ -1095,15 +1095,6 @@ parse_section_main(struct context *ctx)
         return true;
     }
 
-    else if (strcmp(key, "alpha-mode") == 0) {
-        _Static_assert(sizeof(conf->alpha_mode) == sizeof(int),
-        "enum is not 32-bit");
-        return value_to_enum(
-            ctx,
-            (const char *[]){"default", "matching", "all", NULL},
-            (int *)&conf->alpha_mode);
-    }
-
     else {
         LOG_CONTEXTUAL_ERR("not a valid option: %s", key);
         return false;
@@ -1490,6 +1481,15 @@ parse_section_colors(struct context *ctx)
         return true;
     }
 
+    else if (strcmp(key, "alpha-mode") == 0) {
+        _Static_assert(sizeof(conf->colors.alpha_mode) == sizeof(int),
+        "enum is not 32-bit");
+
+        return value_to_enum(
+            ctx,
+            (const char *[]){"default", "matching", "all", NULL},
+            (int *)&conf->colors.alpha_mode);
+    }
 
     else {
         LOG_CONTEXTUAL_ERR("not valid option");
@@ -3347,13 +3347,13 @@ config_load(struct config *conf, const char *conf_path,
             },
             .multiplier = 3.,
         },
-        .alpha_mode = ALPHA_MODE_DEFAULT,
         .colors = {
             .fg = default_foreground,
             .bg = default_background,
             .flash = 0x7f7f00,
             .flash_alpha = 0x7fff,
             .alpha = 0xffff,
+            .alpha_mode = ALPHA_MODE_DEFAULT,
             .selection_fg = 0x80000000,  /* Use default bg */
             .selection_bg = 0x80000000,  /* Use default fg */
             .use_custom = {
