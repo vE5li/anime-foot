@@ -720,6 +720,11 @@ test_section_colors(void)
                     &conf.colors.search_box.match.fg,
                     &conf.colors.search_box.match.bg);
 
+    test_enum(&ctx, &parse_section_colors, "alpha-mode", 3,
+              (const char *[]){"default", "matching", "all"},
+              (int []){ALPHA_MODE_DEFAULT, ALPHA_MODE_MATCHING, ALPHA_MODE_ALL},
+              (int *)&conf.colors.alpha_mode);
+
     for (size_t i = 0; i < 255; i++) {
         char key_name[4];
         sprintf(key_name, "%zu", i);
