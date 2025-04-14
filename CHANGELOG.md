@@ -69,6 +69,11 @@
   `Mod4` etc) in key bindings are now recognized as being virtual, and
   are automatically mapped to the corresponding real modifier. This
   means you can use e.g. `Alt+b` instead of `Mod1+b`.
+* `alpha-mode` option to `foot.ini`. Defaults to `default`. This
+  config changes how alpha is handled on background colours not set by
+  the terminal.(e.g. vim) ([#2026](2026))
+
+[2026]: https://codeberg.org/dnkl/foot/issues/2026
 
 
 ### Changed
@@ -788,9 +793,6 @@
 
 ### Added
 
-* `alpha-mode` option to `foot.ini`. Defaults to `default`. This
-  config changes how alpha is handled on background colours not set by
-  the terminal.(e.g. vim) ([#1510](1510))
 * Support for building with _wayland-protocols_ as a subproject.
 * Mouse wheel scrolls can now be used in `mouse-bindings`
   ([#1077][1077]).
