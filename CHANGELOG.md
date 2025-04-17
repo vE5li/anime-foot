@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.22.0](#1-22-0)
 * [1.21.0](#1-21-0)
 * [1.20.2](#1-20-2)
 * [1.20.1](#1-20-1)
@@ -59,7 +59,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
+## 1.22.0
+
 ### Added
 
 * Support for toplevel edge constraints. When the compositor indicates
@@ -102,8 +103,6 @@
 [2016]: https://codeberg.org/dnkl/foot/issues/2016
 
 
-### Deprecated
-### Removed
 ### Fixed
 
 * Regression: assertion in `url-mode.c` when activating a second URL
@@ -119,8 +118,15 @@
 [2027]: https://codeberg.org/dnkl/foot/issues/2027
 
 
-### Security
 ### Contributors
+
+* Alex Xu (Hello71)
+* datsudo
+* Dominique Martinet
+* Fazzi
+* llyyr
+* Łukasz Wojniłowicz
+* Sam McCall
 
 
 ## 1.21.0
