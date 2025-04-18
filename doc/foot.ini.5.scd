@@ -1190,17 +1190,18 @@ different approaches.
 As an example, let's say you press ctrl+shift+c (assume plain us ASCII
 layout). XKB will tell foot *Control+C* was pressed. Note the lack of
 the shift modifier, and the upper case 'C'. Internally, this is called
-the "translated" form, and is what foot tries to match first.
+the "translated" form.
 
-If no "translated" key bindings can be found, foot proceeds to
-checking the "untranslated" variant. Using the same example as above,
-this will match *Control+Shift+c* (shift modifier present, lower case
-'c').
+The "untranslated" form (*Control+Shift+c*) is derived from the
+translated form, and is what foot tries to match first.
+
+If no "untranslated" key bindings can be found, foot proceeds to
+checking the "translated" variant.
 
 This means you can use either form in your foot configuration, and
-that *Control+C* (and similar) has higher priority than
-*Control+Shift+c*. Also note that while foot normally detects when the
-same combination is assigned to multiple actions, it will not detect
+that *Control+Shift+c* (and similar) has higher priority than
+*Control+C*. Also note that while foot normally detects when the same
+combination is assigned to multiple actions, it will not detect
 *Control+C* vs. *Control+Shift+c* collisions. Call it a known bug...
 
 Finally, foot tries to match the raw key code. Here, the primary
