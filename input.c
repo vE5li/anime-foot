@@ -765,8 +765,16 @@ keyboard_leave(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
     seat->kbd.alt = false;
     seat->kbd.ctrl = false;
     seat->kbd.super = false;
+
     if (seat->kbd.xkb_compose_state != NULL)
         xkb_compose_state_reset(seat->kbd.xkb_compose_state);
+
+    if (seat->kbd.xkb_state != NULL && seat->kbd.xkb_keymap != NULL) {
+        const xkb_layout_index_t layout_count = xkb_keymap_num_layouts(seat->kbd.xkb_keymap);
+
+        for (xkb_layout_index_t i = 0; i < layout_count; i++)
+            xkb_state_update_mask(seat->kbd.xkb_state, 0, 0, 0, i, i, i);
+    }
 
     if (old_focused != NULL) {
         seat->pointer.hidden = false;

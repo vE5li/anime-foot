@@ -71,8 +71,11 @@
 * Grapheme shaping was allowed to be "enabled" at runtime, even though
   disabled at compile time. This caused mis-rendering of certain
   codepoints ([#2039][2039]).
+* Keyboard modifiers not being reset on keyboard leave events
+  ([#2034][2034]).
 
 [2039]: https://codeberg.org/dnkl/foot/issues/2039
+[2034]: https://codeberg.org/dnkl/foot/issues/2034
 
 
 ### Security
