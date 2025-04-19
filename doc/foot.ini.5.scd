@@ -225,7 +225,7 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	using 8-bit surfaces (i.e. each color channel is 8 bits). The
 	amount of errors can be reduced by using 10-bit surfaces; see
 	*tweak.surface-bit-depth*.
-    
+	
 	Default: enabled when compositor support is available
 
 *box-drawings-uses-font-glyphs*
