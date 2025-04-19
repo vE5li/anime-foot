@@ -250,6 +250,7 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	
 		- U+02500 - U+0259F
 		- U+02800 - U+028FF
+		- U+1CD00 - U+1CDE5
 		- U+1Fb00 - U+1FB9B
 	
 	Default: _no_.
