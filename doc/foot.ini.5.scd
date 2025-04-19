@@ -220,11 +220,12 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	than intended when rendered with gamma-correct blending, since the
 	font designer set the font weight based on incorrect rendering.
 	
-	You may also want to enable 10-bit image buffers when
-	gamma-correct blending is enabled. Though probably only if you do
-	not use a transparent background (with 10-bit buffers, you only
-	get 2 bits alpha). See *tweak.surface-bit-depth*.
-	
+	Note that some colors (especially dark ones) will look a bit
+	off. The reason for this is loss of color precision, due to foot
+	using 8-bit surfaces (i.e. each color channel is 8 bits). The
+	amount of errors can be reduced by using 10-bit surfaces; see
+	*tweak.surface-bit-depth*.
+    
 	Default: enabled when compositor support is available
 
 *box-drawings-uses-font-glyphs*
@@ -1978,13 +1979,13 @@ any of these options.
 	best option.
 	
 	When *gamma-correct-blending* is enabled, you may want to enable
-	10-bit surfaces, as that improves the color resolution. Be aware
+	10-bit surfaces, as that improves color precision. Be aware
 	however, that in this mode, the alpha channel is only 2 bits
 	instead of 8 bits. Thus, if you are using a transparent
 	background, you may want to use the default, *8-bit*, even if you
 	have gamma-correct blending enabled.
 	
-	You should also note that 10-bit surface is slower. This will
+	You should also note that 10-bit surface is much slower. This will
 	increase input latency and decrease rendering throughput.
 	
 	Default: _8-bit_
