@@ -754,8 +754,15 @@ render_cell(struct terminal *term, pixman_image_t *pix,
             }
 
             case ALPHA_MODE_MATCHING: {
-                if (cell->attrs.bg == term->colors.bg)
+                if (cell->attrs.bg_src == COLOR_DEFAULT ||
+                    ((cell->attrs.bg_src == COLOR_BASE16 ||
+                      cell->attrs.bg_src == COLOR_BASE256) &&
+                     term->colors.table[cell->attrs.bg] == term->colors.bg) ||
+                    (cell->attrs.bg_src == COLOR_RGB &&
+                     cell->attrs.bg == term->colors.bg))
+                {
                     alpha = term->colors.alpha;
+                }
                 break;
             }
 

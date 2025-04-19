@@ -66,6 +66,10 @@
 ### Deprecated
 ### Removed
 ### Fixed
+
+* `colors.alpha-mode=matching` not working as intended.
+
+
 ### Security
 ### Contributors
 
