@@ -68,6 +68,11 @@
 ### Fixed
 
 * `colors.alpha-mode=matching` not working as intended.
+* Grapheme shaping was allowed to be "enabled" at runtime, even though
+  disabled at compile time. This caused mis-rendering of certain
+  codepoints ([#2039][2039]).
+
+[2039]: https://codeberg.org/dnkl/foot/issues/2039
 
 
 ### Security

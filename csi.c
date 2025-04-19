@@ -558,7 +558,9 @@ decset_decrst(struct terminal *term, unsigned param, bool enable)
         break;
 
     case 2027:
+#if defined(FOOT_GRAPHEME_CLUSTERING)
         term->grapheme_shaping = enable;
+#endif
         break;
 
     case 2048:
