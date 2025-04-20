@@ -898,15 +898,6 @@ applications can change these at runtime.
 	enabled. Expressed in milliseconds between each blink. Default:
 	_500_.
 
-*color*
-	Two space separated RRGGBB values (i.e. plain old 6-digit hex
-	values, without prefix) specifying the foreground (text) and
-	background (cursor) colors for the cursor.
-	
-	Example: *ff0000 00ff00* (green cursor, red text)
-	
-	Default: the regular foreground and background colors, reversed.
-
 *beam-thickness*
 	Thickness (width) of the beam styled cursor. The value is in
 	points, and its exact value thus depends on the monitor's DPI. To
@@ -966,6 +957,15 @@ applications can change these at runtime.
 The colors are in RRGGBB format (i.e. plain old 6-digit hex values,
 without prefix). That is, they do *not* have an alpha component. You
 can configure the background transparency with the _alpha_ option.
+
+*cursor*
+	Two space separated RRGGBB values (i.e. plain old 6-digit hex
+	values, without prefix) specifying the foreground (text) and
+	background (cursor) colors for the cursor.
+	
+	Example: *ff0000 00ff00* (green cursor, red text)
+	
+	Default: the regular foreground and background colors, reversed.
 
 *foreground*
 	Default foreground color. This is the color used when no ANSI

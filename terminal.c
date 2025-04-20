@@ -1298,8 +1298,8 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
             .fg = conf->colors.fg,
             .bg = conf->colors.bg,
             .alpha = conf->colors.alpha,
-            .cursor_fg = conf->cursor.color.text,
-            .cursor_bg = conf->cursor.color.cursor,
+            .cursor_fg = (conf->colors.use_custom.cursor ? 1u << 31 : 0) | conf->colors.cursor.text,
+            .cursor_bg = (conf->colors.use_custom.cursor ? 1u << 31 : 0) | conf->colors.cursor.cursor,
             .selection_fg = conf->colors.selection_fg,
             .selection_bg = conf->colors.selection_bg,
             .use_custom_selection = conf->colors.use_custom.selection,
@@ -2153,8 +2153,8 @@ term_reset(struct terminal *term, bool hard)
     term->colors.fg = term->conf->colors.fg;
     term->colors.bg = term->conf->colors.bg;
     term->colors.alpha = term->conf->colors.alpha;
-    term->colors.cursor_fg = term->conf->cursor.color.text;
-    term->colors.cursor_bg = term->conf->cursor.color.cursor;
+    term->colors.cursor_fg = (term->conf->colors.use_custom.cursor ? 1u << 31 : 0) | term->conf->colors.cursor.text;
+    term->colors.cursor_bg = (term->conf->colors.use_custom.cursor ? 1u << 31 : 0) | term->conf->colors.cursor.cursor;
     term->colors.selection_fg = term->conf->colors.selection_fg;
     term->colors.selection_bg = term->conf->colors.selection_bg;
     term->colors.use_custom_selection = term->conf->colors.use_custom.selection;

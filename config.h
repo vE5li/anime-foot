@@ -149,7 +149,12 @@ struct color_theme {
         ALPHA_MODE_DEFAULT,
         ALPHA_MODE_MATCHING,
         ALPHA_MODE_ALL
-        } alpha_mode;
+    } alpha_mode;
+
+    struct {
+        uint32_t text;
+        uint32_t cursor;
+    } cursor;
 
     struct {
         uint32_t fg;
@@ -174,6 +179,7 @@ struct color_theme {
     } search_box;
 
     struct {
+        bool cursor:1;
         bool selection:1;
         bool jump_label:1;
         bool scrollback_indicator:1;
@@ -306,10 +312,6 @@ struct config {
             bool enabled;
             uint32_t rate_ms;
         } blink;
-        struct {
-            uint32_t text;
-            uint32_t cursor;
-        } color;
         struct pt_or_px beam_thickness;
         struct pt_or_px underline_thickness;
     } cursor;

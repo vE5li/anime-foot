@@ -1445,6 +1445,20 @@ parse_section_colors(struct context *ctx)
         return true;
     }
 
+    else if (streq(key, "cursor")) {
+        if (!value_to_two_colors(
+                ctx,
+                &conf->colors.cursor.text,
+                &conf->colors.cursor.cursor,
+                false))
+        {
+            return false;
+        }
+
+        conf->colors.use_custom.cursor = true;
+        return true;
+    }
+
     else if (streq(key, "urls")) {
         if (!value_to_color(ctx, &conf->colors.url, false))
             return false;
@@ -1537,17 +1551,24 @@ parse_section_cursor(struct context *ctx)
         return value_to_uint32(ctx, 10, &conf->cursor.blink.rate_ms);
 
     else if (streq(key, "color")) {
+        LOG_WARN("%s:%d: cursor.color: deprecated; use colors.cursor instead",
+                 ctx->path, ctx->lineno);
+
+        user_notification_add(
+            &conf->notifications,
+            USER_NOTIFICATION_DEPRECATED,
+            xstrdup("cursor.color: use colors.cursor instead"));
+
         if (!value_to_two_colors(
-                ctx,
-                &conf->cursor.color.text,
-                &conf->cursor.color.cursor,
-                false))
+            ctx,
+            &conf->colors.cursor.text,
+            &conf->colors.cursor.cursor,
+            false))
         {
             return false;
         }
 
-        conf->cursor.color.text |= 1u << 31;
-        conf->cursor.color.cursor |= 1u << 31;
+        conf->colors.use_custom.cursor = true;
         return true;
     }
 
@@ -3356,6 +3377,10 @@ config_load(struct config *conf, const char *conf_path,
             .alpha_mode = ALPHA_MODE_DEFAULT,
             .selection_fg = 0x80000000,  /* Use default bg */
             .selection_bg = 0x80000000,  /* Use default fg */
+            .cursor = {
+                .text = 0,
+                .cursor = 0,
+            },
             .use_custom = {
                 .selection = false,
                 .jump_label = false,
@@ -3370,10 +3395,6 @@ config_load(struct config *conf, const char *conf_path,
             .blink = {
                 .enabled = false,
                 .rate_ms = 500,
-            },
-            .color = {
-                .text = 0,
-                .cursor = 0,
             },
             .beam_thickness = {.pt = 1.5},
             .underline_thickness = {.pt = 0., .px = -1},

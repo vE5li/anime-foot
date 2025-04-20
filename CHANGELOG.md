@@ -64,7 +64,15 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* `cursor.color` moved to `colors.cursor`.
+
+
 ### Deprecated
+
+* `cursor.color` config option; use `colors.cursor` instead.
+
+
 ### Removed
 ### Fixed
 ### Security

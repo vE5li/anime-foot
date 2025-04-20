@@ -1570,8 +1570,14 @@ osc_dispatch(struct terminal *term)
 
     case 112:
         LOG_DBG("resetting cursor color");
-        term->colors.cursor_fg = term->conf->cursor.color.text;
-        term->colors.cursor_bg = term->conf->cursor.color.cursor;
+        term->colors.cursor_fg = term->conf->colors.cursor.text;
+        term->colors.cursor_bg = term->conf->colors.cursor.cursor;
+
+        if (term->conf->colors.use_custom.cursor) {
+            term->colors.cursor_fg |= 1u << 31;
+            term->colors.cursor_bg |= 1u << 31;
+        }
+
         term_damage_cursor(term);
         break;
 
