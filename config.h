@@ -131,6 +131,59 @@ struct custom_regex {
     struct config_spawn_template launch;
 };
 
+struct color_theme {
+    uint32_t fg;
+    uint32_t bg;
+    uint32_t flash;
+    uint32_t flash_alpha;
+    uint32_t table[256];
+    uint16_t alpha;
+    uint32_t selection_fg;
+    uint32_t selection_bg;
+    uint32_t url;
+
+    uint32_t dim[8];
+    uint32_t sixel[16];
+
+    enum {
+        ALPHA_MODE_DEFAULT,
+        ALPHA_MODE_MATCHING,
+        ALPHA_MODE_ALL
+        } alpha_mode;
+
+    struct {
+        uint32_t fg;
+        uint32_t bg;
+    } jump_label;
+
+    struct {
+        uint32_t fg;
+        uint32_t bg;
+    } scrollback_indicator;
+
+    struct {
+        struct {
+            uint32_t fg;
+            uint32_t bg;
+        } no_match;
+
+        struct {
+            uint32_t fg;
+            uint32_t bg;
+        } match;
+    } search_box;
+
+    struct {
+        bool selection:1;
+        bool jump_label:1;
+        bool scrollback_indicator:1;
+        bool url:1;
+        bool search_box_no_match:1;
+        bool search_box_match:1;
+        uint8_t dim;
+    } use_custom;
+};
+
 struct config {
     char *term;
     char *shell;
@@ -244,58 +297,7 @@ struct config {
 
     tll(struct custom_regex) custom_regexes;
 
-    struct {
-        uint32_t fg;
-        uint32_t bg;
-        uint32_t flash;
-        uint32_t flash_alpha;
-        uint32_t table[256];
-        uint16_t alpha;
-        uint32_t selection_fg;
-        uint32_t selection_bg;
-        uint32_t url;
-
-        uint32_t dim[8];
-        uint32_t sixel[16];
-
-        enum {
-            ALPHA_MODE_DEFAULT,
-            ALPHA_MODE_MATCHING,
-            ALPHA_MODE_ALL
-        } alpha_mode;
-
-        struct {
-            uint32_t fg;
-            uint32_t bg;
-        } jump_label;
-
-        struct {
-            uint32_t fg;
-            uint32_t bg;
-        } scrollback_indicator;
-
-        struct {
-            struct {
-                uint32_t fg;
-                uint32_t bg;
-            } no_match;
-
-            struct {
-                uint32_t fg;
-                uint32_t bg;
-            } match;
-        } search_box;
-
-        struct {
-            bool selection:1;
-            bool jump_label:1;
-            bool scrollback_indicator:1;
-            bool url:1;
-            bool search_box_no_match:1;
-            bool search_box_match:1;
-            uint8_t dim;
-        } use_custom;
-    } colors;
+    struct color_theme colors;
 
     struct {
         enum cursor_style style;
