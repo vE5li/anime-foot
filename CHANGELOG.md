@@ -74,6 +74,8 @@
 * Support for private mode 2031 - [_Dark and Light Mode
   Detection_](https://contour-terminal.org/vt-extensions/color-palette-update-notifications/)
   ([#2025][2025])
+* Added `initial-color-theme=1|2` config option. `1` uses colors from
+  the `[colors]` section, `2` uses `[colors2]`.
 
 [2025]: https://codeberg.org/dnkl/foot/issues/2025
 
