@@ -229,9 +229,9 @@
   enabled ([#1947][1947]).
 * Reflow of the cursor (active + saved) when at the end of the line
   with a pending wrap (LCF set) ([#1954][1954]).
-* Zero-width characters that also are grapheme breaks (e.g. U+200B,
+* ~~Zero-width characters that also are grapheme breaks (e.g. U+200B,
   ZERO WIDTH SPACE) being ignored (discarded and never stored in the
-  grid) ([#1960][1960]).
+  grid) ([#1960][1960]).~~ (reverted)
 * `--server=<FD>` not working on FreeBSD ([#1956][1956]).
 * Crash when resetting the terminal and an application had previously
   set a custom app ID ([#1963][1963])
