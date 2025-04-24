@@ -4156,14 +4156,6 @@ term_process_and_print_non_ascii(struct terminal *term, char32_t wc)
         (grapheme_clustering ||
          (!grapheme_clustering && width == 0 && wc >= 0x300)))
     {
-        if (unlikely(wc == 0x200e || wc == 0x200f)) {
-            /*
-             * Ignore left-to-right and right-to-left markers
-             * see https://codeberg.org/dnkl/foot/issues/2049
-             */
-            return;
-        }
-
         int col = term->grid->cursor.point.col;
         if (!term->grid->cursor.lcf)
             col--;

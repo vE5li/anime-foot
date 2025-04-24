@@ -63,13 +63,6 @@
 ## Unreleased
 ### Added
 ### Changed
-
-* Left-to-right and right-to-left markers (U+200E and U+200F) are now
-  ignored ([#2049][2049]).
-
-[2049]: https://codeberg.org/dnkl/foot/issues/2049
-
-
 ### Deprecated
 ### Removed
 ### Fixed
@@ -80,8 +73,6 @@
   codepoints ([#2039][2039]).
 * Keyboard modifiers not being reset on keyboard leave events
   ([#2034][2034]).
-* Last character in a `remind` calendar event being in the wrong font
-  and color ([#2049][2049]).
 
 [2039]: https://codeberg.org/dnkl/foot/issues/2039
 [2034]: https://codeberg.org/dnkl/foot/issues/2034
