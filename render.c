@@ -744,7 +744,7 @@ render_cell(struct terminal *term, pixman_image_t *pix,
             _bg = swap;
         }
 
-        if (!term->window->is_fullscreen && term->colors.alpha != 0xffff) {
+        else if (!term->window->is_fullscreen && term->colors.alpha != 0xffff) {
             switch (term->conf->colors.alpha_mode) {
             case ALPHA_MODE_DEFAULT: {
                 if (cell->attrs.bg_src == COLOR_DEFAULT) {

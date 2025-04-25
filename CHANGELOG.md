@@ -76,6 +76,8 @@
 * Fallback font (and possibly wrong color) being used when a character
   was followed by a zero-width grapheme breaking codepoint (for
   example, _LEFT-TO-RIGHT MARK_) ([#2049][2049]).
+* Regression: alpha applied to inversed text/selections
+  ([#2073][2073]).
 
 [2039]: https://codeberg.org/dnkl/foot/issues/2039
 [2034]: https://codeberg.org/dnkl/foot/issues/2034
