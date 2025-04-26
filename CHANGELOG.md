@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.22.1](#1-22-1)
 * [1.22.0](#1-22-0)
 * [1.21.0](#1-21-0)
 * [1.20.2](#1-20-2)
@@ -60,11 +60,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
-### Added
-### Changed
-### Deprecated
-### Removed
+## 1.22.1
+
 ### Fixed
 
 * `colors.alpha-mode=matching` not working as intended.
@@ -85,8 +82,10 @@
 [2073]: https://codeberg.org/dnkl/foot/issues/2073
 
 
-### Security
 ### Contributors
+
+* Jan Palus
+* valoq
 
 
 ## 1.22.0
