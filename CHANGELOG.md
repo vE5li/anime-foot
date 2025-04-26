@@ -76,6 +76,13 @@
   ([#2025][2025])
 * Added `initial-color-theme=1|2` config option. `1` uses colors from
   the `[colors]` section, `2` uses `[colors2]`.
+* Combined dark/light theme files for (dark variant is the default,
+  set `initial-color-theme=2` to use the light variant by default):
+  - gruvbox
+  - nvim
+  - paper-color
+  - selenized
+  - solarized
 
 [2025]: https://codeberg.org/dnkl/foot/issues/2025
 
