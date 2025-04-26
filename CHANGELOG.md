@@ -82,6 +82,7 @@
 [2039]: https://codeberg.org/dnkl/foot/issues/2039
 [2034]: https://codeberg.org/dnkl/foot/issues/2034
 [2049]: https://codeberg.org/dnkl/foot/issues/2049
+[2073]: https://codeberg.org/dnkl/foot/issues/2073
 
 
 ### Security
