@@ -220,10 +220,11 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	than intended when rendered with gamma-correct blending, since the
 	font designer set the font weight based on incorrect rendering.
 	
-	You may also want to enable 10-bit image buffers when
-	gamma-correct blending is enabled. Though probably only if you do
-	not use a transparent background (with 10-bit buffers, you only
-	get 2 bits alpha). See *tweak.surface-bit-depth*.
+	Note that some colors (especially dark ones) will look a bit
+	off. The reason for this is loss of color precision, due to foot
+	using 8-bit surfaces (i.e. each color channel is 8 bits). The
+	amount of errors can be reduced by using 10-bit surfaces; see
+	*tweak.surface-bit-depth*.
 	
 	Default: enabled when compositor support is available
 
@@ -249,6 +250,7 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	
 		- U+02500 - U+0259F
 		- U+02800 - U+028FF
+		- U+1CD00 - U+1CDE5
 		- U+1Fb00 - U+1FB9B
 	
 	Default: _no_.
@@ -1190,17 +1192,18 @@ different approaches.
 As an example, let's say you press ctrl+shift+c (assume plain us ASCII
 layout). XKB will tell foot *Control+C* was pressed. Note the lack of
 the shift modifier, and the upper case 'C'. Internally, this is called
-the "translated" form, and is what foot tries to match first.
+the "translated" form.
 
-If no "translated" key bindings can be found, foot proceeds to
-checking the "untranslated" variant. Using the same example as above,
-this will match *Control+Shift+c* (shift modifier present, lower case
-'c').
+The "untranslated" form (*Control+Shift+c*) is derived from the
+translated form, and is what foot tries to match first.
+
+If no "untranslated" key bindings can be found, foot proceeds to
+checking the "translated" variant.
 
 This means you can use either form in your foot configuration, and
-that *Control+C* (and similar) has higher priority than
-*Control+Shift+c*. Also note that while foot normally detects when the
-same combination is assigned to multiple actions, it will not detect
+that *Control+Shift+c* (and similar) has higher priority than
+*Control+C*. Also note that while foot normally detects when the same
+combination is assigned to multiple actions, it will not detect
 *Control+C* vs. *Control+Shift+c* collisions. Call it a known bug...
 
 Finally, foot tries to match the raw key code. Here, the primary
@@ -1977,13 +1980,13 @@ any of these options.
 	best option.
 	
 	When *gamma-correct-blending* is enabled, you may want to enable
-	10-bit surfaces, as that improves the color resolution. Be aware
+	10-bit surfaces, as that improves color precision. Be aware
 	however, that in this mode, the alpha channel is only 2 bits
 	instead of 8 bits. Thus, if you are using a transparent
 	background, you may want to use the default, *8-bit*, even if you
 	have gamma-correct blending enabled.
 	
-	You should also note that 10-bit surface is slower. This will
+	You should also note that 10-bit surface is much slower. This will
 	increase input latency and decrease rendering throughput.
 	
 	Default: _8-bit_

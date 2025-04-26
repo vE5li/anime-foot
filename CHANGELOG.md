@@ -1,5 +1,6 @@
 # Changelog
 
+* [Unreleased](#unreleased)
 * [1.22.0](#1-22-0)
 * [1.21.0](#1-21-0)
 * [1.20.2](#1-20-2)
@@ -57,6 +58,35 @@
 * [1.2.2](#1-2-2)
 * [1.2.1](#1-2-1)
 * [1.2.0](#1-2-0)
+
+
+## Unreleased
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
+* `colors.alpha-mode=matching` not working as intended.
+* Grapheme shaping was allowed to be "enabled" at runtime, even though
+  disabled at compile time. This caused mis-rendering of certain
+  codepoints ([#2039][2039]).
+* Keyboard modifiers not being reset on keyboard leave events
+  ([#2034][2034]).
+* Fallback font (and possibly wrong color) being used when a character
+  was followed by a zero-width grapheme breaking codepoint (for
+  example, _LEFT-TO-RIGHT MARK_) ([#2049][2049]).
+* Regression: alpha applied to inversed text/selections
+  ([#2073][2073]).
+
+[2039]: https://codeberg.org/dnkl/foot/issues/2039
+[2034]: https://codeberg.org/dnkl/foot/issues/2034
+[2049]: https://codeberg.org/dnkl/foot/issues/2049
+[2073]: https://codeberg.org/dnkl/foot/issues/2073
+
+
+### Security
+### Contributors
 
 
 ## 1.22.0
@@ -206,9 +236,9 @@
   enabled ([#1947][1947]).
 * Reflow of the cursor (active + saved) when at the end of the line
   with a pending wrap (LCF set) ([#1954][1954]).
-* Zero-width characters that also are grapheme breaks (e.g. U+200B,
+* ~~Zero-width characters that also are grapheme breaks (e.g. U+200B,
   ZERO WIDTH SPACE) being ignored (discarded and never stored in the
-  grid) ([#1960][1960]).
+  grid) ([#1960][1960]).~~ (reverted)
 * `--server=<FD>` not working on FreeBSD ([#1956][1956]).
 * Crash when resetting the terminal and an application had previously
   set a custom app ID ([#1963][1963])
