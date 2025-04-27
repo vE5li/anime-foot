@@ -1350,7 +1350,7 @@ parse_section_regex(struct context *ctx)
     }
 }
 
-static bool
+static bool NOINLINE
 parse_color_theme(struct context *ctx, struct color_theme *theme)
 {
     const char *key = ctx->key;
