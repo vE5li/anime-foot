@@ -64,9 +64,24 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* `gamma-correct-blending=yes` now uses a pure gamma 2.2 transfer
+  function, instead of the piece-wise sRGB transfer function, to match
+  what compositors do.
+
+
 ### Deprecated
 ### Removed
 ### Fixed
+
+* Wrong colors when `gamma-correct-blending=yes` (the default when
+  there is compositor support). Note that some colors will still be
+  off by a **very** small amount, due to loss of precision when
+  converting to a linear color space. ([#2035][2035]).
+
+[2035]: https://codeberg.org/dnkl/foot/issues/2035
+
+
 ### Security
 ### Contributors
 
