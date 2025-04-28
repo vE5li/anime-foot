@@ -85,8 +85,11 @@
   - paper-color
   - selenized
   - solarized
+* `regex-copy`/`show-urls-copy` will copy and paste the selected text if the hint
+  is completed with an uppercase character ([#1975][1975]).
 
 [2025]: https://codeberg.org/dnkl/foot/issues/2025
+[1975]: https://codeberg.org/dnkl/foot/issues/1975
 
 
 ### Changed
