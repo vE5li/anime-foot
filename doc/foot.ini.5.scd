@@ -220,11 +220,12 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	than intended when rendered with gamma-correct blending, since the
 	font designer set the font weight based on incorrect rendering.
 	
-	Note that some colors (especially dark ones) will look a bit
+	Note that some colors (especially dark ones) may be slightly
 	off. The reason for this is loss of color precision, due to foot
-	using 8-bit surfaces (i.e. each color channel is 8 bits). The
-	amount of errors can be reduced by using 10-bit surfaces; see
-	*tweak.surface-bit-depth*.
+	using 8-bit surfaces (i.e. each color channel is 8 bits). In all
+	known cases, the difference is small enough not to be noticed
+	though. The amount of errors can be reduced by using 10-bit
+	surfaces; see *tweak.surface-bit-depth*.
 	
 	Default: enabled when compositor support is available
 
