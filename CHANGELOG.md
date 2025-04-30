@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.22.2](#1-22-2)
 * [1.22.1](#1-22-1)
 * [1.22.0](#1-22-0)
 * [1.21.0](#1-21-0)
@@ -61,8 +61,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
-### Added
+## 1.22.2
+
 ### Changed
 
 * `gamma-correct-blending=yes` now uses a pure gamma 2.2 transfer
@@ -70,8 +70,6 @@
   what compositors do.
 
 
-### Deprecated
-### Removed
 ### Fixed
 
 * Wrong colors when `gamma-correct-blending=yes` (the default when
@@ -80,10 +78,6 @@
   converting to a linear color space. ([#2035][2035]).
 
 [2035]: https://codeberg.org/dnkl/foot/issues/2035
-
-
-### Security
-### Contributors
 
 
 ## 1.22.1
