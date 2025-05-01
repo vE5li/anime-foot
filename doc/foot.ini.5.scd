@@ -220,12 +220,13 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	than intended when rendered with gamma-correct blending, since the
 	font designer set the font weight based on incorrect rendering.
 	
-	Note that some colors (especially dark ones) may be slightly
-	off. The reason for this is loss of color precision, due to foot
-	using 8-bit surfaces (i.e. each color channel is 8 bits). In all
-	known cases, the difference is small enough not to be noticed
-	though. The amount of errors can be reduced by using 10-bit
-	surfaces; see *tweak.surface-bit-depth*.
+	In order to represent colors faithfully, higher precision image
+	buffers are required. By default, foot will use 10-bit color
+	channels, if available, when gamma-correct blending is
+	enabled. However, the high precision buffers are slow; if you want
+	to use gamma-correct blending, but prefer speed (throughput and
+	input latency) over accurate colors, you can force 8-bit color
+	channels by setting *tweak.surface-bit-depth=8-bit*.
 	
 	Default: _no_.
 
@@ -1974,23 +1975,25 @@ any of these options.
 
 *surface-bit-depth*
 	Selects which RGB bit depth to use for image buffers. One of
-	*8-bit*, or *10-bit*.
+	*auto*, *8-bit*, or *10-bit*.
 	
-	The default, *8-bit*, uses 8 bits for all channels, alpha
-	included. When *gamma-correct-blending* is disabled, this is the
-	best option.
+	*auto* chooses bit depth depending on other settings, and
+	availability.
 	
-	When *gamma-correct-blending* is enabled, you may want to enable
-	10-bit surfaces, as that improves color precision. Be aware
-	however, that in this mode, the alpha channel is only 2 bits
-	instead of 8 bits. Thus, if you are using a transparent
-	background, you may want to use the default, *8-bit*, even if you
-	have gamma-correct blending enabled.
+	*8-bit*, uses 8 bits for each color channel, alpha included. This
+	is the default when *gamma-correct-blending=no*.
 	
-	You should also note that 10-bit surface is much slower. This will
-	increase input latency and decrease rendering throughput.
+	*10-bit* uses 10 bits for each RGB channel, and 2 bits for the
+	alpha channel. Thus, it provides higher precision color channels,
+	but a lower precision alpha channel. It is the default when
+	*gamma-correct-blending=yes*, if supported by the compositor.
 	
-	Default: _8-bit_
+	Note that *10-bit* is much slower than *8-bit*; if you want to use
+	gamma-correct blending, and if you prefer speed (throughput and
+	input latency) over accurate colors, you can set
+	*surface-bit-depth=8-bit* explicitly.
+	
+	Default: _auto_
 
 # SEE ALSO
 

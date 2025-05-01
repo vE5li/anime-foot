@@ -64,14 +64,27 @@
 
 ## Unreleased
 ### Added
+
+* `auto` to the `tweak.surface-bit-depth` option.
+
+
 ### Changed
 
 * `gamma-correct-blending` now defaults to `no` instead of `yes`.
+* `tweak.surface-bit-depth` default value changed to `auto`; uses
+  10-bit surfaces when `gamma-correct-blending=yes`, and 8-bit
+  surfaces otherwise.
 
 
 ### Deprecated
 ### Removed
 ### Fixed
+
+* Inaccurate colors when `gamma-correct-blending=yes` ([#2082][2082]).
+
+[2082]: https://codeberg.org/dnkl/foot/issues/2082
+
+
 ### Security
 ### Contributors
 

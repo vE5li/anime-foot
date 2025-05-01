@@ -2640,3 +2640,10 @@ wayl_activate(struct wayland *wayl, struct wl_window *win, const char *token)
 
     xdg_activation_v1_activate(wayl->xdg_activation, token, win->surface.surf);
 }
+
+bool
+wayl_do_linear_blending(const struct wayland *wayl, const struct config *conf)
+{
+    return conf->gamma_correct &&
+           wayl->color_management.img_description != NULL;
+}

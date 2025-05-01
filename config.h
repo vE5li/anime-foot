@@ -131,6 +131,12 @@ struct custom_regex {
     struct config_spawn_template launch;
 };
 
+enum shm_bit_depth {
+    SHM_BITS_AUTO,
+    SHM_BITS_8,
+    SHM_BITS_10
+};
+
 struct config {
     char *term;
     char *shell;
@@ -408,7 +414,7 @@ struct config {
         bool box_drawing_solid_shades;
         bool font_monospace_warn;
         bool sixel;
-        enum { SHM_8_BIT, SHM_10_BIT } surface_bit_depth;
+        enum shm_bit_depth surface_bit_depth;
     } tweak;
 
     struct {

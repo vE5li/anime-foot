@@ -26,6 +26,7 @@
 #include <fcft/fcft.h>
 #include <tllist.h>
 
+#include "config.h"
 #include "cursor-shape.h"
 #include "fdm.h"
 
@@ -539,3 +540,4 @@ bool wayl_get_activation_token(
     struct wl_window *win, activation_token_cb_t cb, void *cb_data);
 void wayl_activate(struct wayland *wayl, struct wl_window *win, const char *token);
 
+bool wayl_do_linear_blending(const struct wayland *wayl, const struct config *conf);

@@ -1073,19 +1073,16 @@ reload_fonts(struct terminal *term, bool resize_grid)
 
     options->scaling_filter = conf->tweak.fcft_filter;
     options->color_glyphs.format = PIXMAN_a8r8g8b8;
-    options->color_glyphs.srgb_decode = render_do_linear_blending(term);
+    options->color_glyphs.srgb_decode =
+        wayl_do_linear_blending(term->wl, term->conf);
 
-    if (conf->tweak.surface_bit_depth == SHM_10_BIT) {
-        if ((term->wl->shm_have_argb2101010 && term->wl->shm_have_xrgb2101010) ||
-            (term->wl->shm_have_abgr2101010 && term->wl->shm_have_xbgr2101010))
-        {
-            /*
-             * Use a high-res buffer type for emojis. We don't want to
-             * use an a2r10g0b10 type of surface, since we need more
-             * than 2 bits for alpha.
-             */
-            options->color_glyphs.format = PIXMAN_rgba_float;
-        }
+    if (shm_chain_bit_depth(term->render.chains.grid) >= SHM_BITS_10) {
+        /*
+         * Use a high-res buffer type for emojis. We don't want to use
+         * an a2r10g0b10 type of surface, since we need more than 2
+         * bits for alpha.
+         */
+        options->color_glyphs.format = PIXMAN_rgba_float;
     }
 
     struct fcft_font *fonts[4];
@@ -1260,7 +1257,10 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
         goto err;
     }
 
-    const bool ten_bit_surfaces = conf->tweak.surface_bit_depth == SHM_10_BIT;
+    const enum shm_bit_depth desired_bit_depth =
+        conf->tweak.surface_bit_depth == SHM_BITS_AUTO
+            ? wayl_do_linear_blending(wayl, conf) ? SHM_BITS_10 : SHM_BITS_8
+            : conf->tweak.surface_bit_depth;
 
     /* Initialize configure-based terminal attributes */
     *term = (struct terminal) {
@@ -1346,13 +1346,13 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
         .render = {
             .chains = {
                 .grid = shm_chain_new(wayl, true, 1 + conf->render_worker_count,
-                                      ten_bit_surfaces),
-                .search = shm_chain_new(wayl, false, 1 ,ten_bit_surfaces),
-                .scrollback_indicator = shm_chain_new(wayl, false, 1, ten_bit_surfaces),
-                .render_timer = shm_chain_new(wayl, false, 1, ten_bit_surfaces),
-                .url = shm_chain_new(wayl, false, 1, ten_bit_surfaces),
-                .csd = shm_chain_new(wayl, false, 1, ten_bit_surfaces),
-                .overlay = shm_chain_new(wayl, false, 1, ten_bit_surfaces),
+                                      desired_bit_depth),
+                .search = shm_chain_new(wayl, false, 1 ,desired_bit_depth),
+                .scrollback_indicator = shm_chain_new(wayl, false, 1, desired_bit_depth),
+                .render_timer = shm_chain_new(wayl, false, 1, desired_bit_depth),
+                .url = shm_chain_new(wayl, false, 1, desired_bit_depth),
+                .csd = shm_chain_new(wayl, false, 1, desired_bit_depth),
+                .overlay = shm_chain_new(wayl, false, 1, desired_bit_depth),
             },
             .scrollback_lines = conf->scrollback.lines,
             .app_sync_updates.timer_fd = app_sync_updates_fd,
@@ -1495,7 +1495,7 @@ term_window_configured(struct terminal *term)
         xassert(term->window->is_configured);
         fdm_add(term->fdm, term->ptmx, EPOLLIN, &fdm_ptmx, term);
 
-        const bool gamma_correct = render_do_linear_blending(term);
+        const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
         LOG_INFO("gamma-correct blending: %s", gamma_correct ? "enabled" : "disabled");
     }
 }
