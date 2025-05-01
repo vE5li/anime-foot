@@ -227,7 +227,7 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	though. The amount of errors can be reduced by using 10-bit
 	surfaces; see *tweak.surface-bit-depth*.
 	
-	Default: enabled when compositor support is available
+	Default: _no_.
 
 *box-drawings-uses-font-glyphs*
 	Boolean. When disabled, foot generates box/line drawing characters

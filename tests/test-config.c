@@ -468,6 +468,7 @@ test_section_main(void)
     test_boolean(&ctx, &parse_section_main, "box-drawings-uses-font-glyphs", &conf.box_drawings_uses_font_glyphs);
     test_boolean(&ctx, &parse_section_main, "locked-title", &conf.locked_title);
     test_boolean(&ctx, &parse_section_main, "dpi-aware", &conf.dpi_aware);
+    test_boolean(&ctx, &parse_section_main, "gamma-correct-blending", &conf.gamma_correct);
 
     test_pt_or_px(&ctx, &parse_section_main, "font-size-adjustment", &conf.font_size_adjustment.pt_or_px);  /* TODO: test ‘N%’ values too */
     test_pt_or_px(&ctx, &parse_section_main, "line-height", &conf.line_height);

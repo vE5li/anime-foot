@@ -65,6 +65,10 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* `gamma-correct-blending` now defaults to `no` instead of `yes`.
+
+
 ### Deprecated
 ### Removed
 ### Fixed
