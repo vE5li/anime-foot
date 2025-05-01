@@ -972,7 +972,7 @@ shm_unref(struct buffer *_buf)
 
 struct buffer_chain *
 shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
-              bool ten_bit_if_capable)
+              enum shm_bit_depth desired_bit_depth)
 {
     pixman_format_code_t pixman_fmt_without_alpha = PIXMAN_x8r8g8b8;
     enum wl_shm_format shm_fmt_without_alpha = WL_SHM_FORMAT_XRGB8888;
@@ -982,8 +982,7 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
 
     static bool have_logged = false;
 
-
-    if (ten_bit_if_capable) {
+    if (desired_bit_depth == SHM_BITS_10) {
         if (wayl->shm_have_argb2101010 && wayl->shm_have_xrgb2101010) {
             pixman_fmt_without_alpha = PIXMAN_x2r10g10b10;
             shm_fmt_without_alpha = WL_SHM_FORMAT_XRGB2101010;
@@ -1057,4 +1056,14 @@ shm_chain_free(struct buffer_chain *chain)
     }
 
     free(chain);
+}
+
+enum shm_bit_depth
+shm_chain_bit_depth(const struct buffer_chain *chain)
+{
+    const pixman_format_code_t fmt = chain->pixman_fmt_with_alpha;
+
+    return (fmt == PIXMAN_a2r10g10b10 || fmt == PIXMAN_a2b10g10r10)
+        ? SHM_BITS_10
+        : SHM_BITS_8;
 }

@@ -2813,7 +2813,7 @@ parse_section_tweak(struct context *ctx)
 
         return value_to_enum(
                 ctx,
-                (const char *[]){"8-bit", "10-bit", NULL},
+                (const char *[]){"auto", "8-bit", "10-bit", NULL},
                 (int *)&conf->tweak.surface_bit_depth);
     }
 
@@ -3463,7 +3463,7 @@ config_load(struct config *conf, const char *conf_path,
             .box_drawing_solid_shades = true,
             .font_monospace_warn = true,
             .sixel = true,
-            .surface_bit_depth = 8,
+            .surface_bit_depth = SHM_BITS_AUTO,
         },
 
         .touch = {

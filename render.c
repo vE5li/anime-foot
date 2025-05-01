@@ -626,7 +626,7 @@ draw_cursor(const struct terminal *term, const struct cell *cell,
     pixman_color_t cursor_color;
     pixman_color_t text_color;
     cursor_colors_for_cell(term, cell, fg, bg, &cursor_color, &text_color,
-                           render_do_linear_blending(term));
+                           wayl_do_linear_blending(term->wl, term->conf));
 
     if (unlikely(!term->kbd_focus)) {
         switch (term->conf->cursor.unfocused_style) {
@@ -820,7 +820,7 @@ render_cell(struct terminal *term, pixman_image_t *pix,
     if (cell->attrs.blink && term->blink.state == BLINK_OFF)
         _fg = color_blend_towards(_fg, 0x00000000, term->conf->dim.amount);
 
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
     pixman_color_t fg = color_hex_to_pixman(_fg, gamma_correct);
     pixman_color_t bg = color_hex_to_pixman_with_alpha(_bg, alpha, gamma_correct);
 
@@ -1180,7 +1180,8 @@ static void
 render_urgency(struct terminal *term, struct buffer *buf)
 {
     uint32_t red = term->colors.table[1];
-    pixman_color_t bg = color_hex_to_pixman(red, render_do_linear_blending(term));
+    pixman_color_t bg = color_hex_to_pixman(
+        red, wayl_do_linear_blending(term->wl, term->conf));
 
     int width = min(min(term->margins.left, term->margins.right),
                     min(term->margins.top, term->margins.bottom));
@@ -1211,7 +1212,7 @@ render_margin(struct terminal *term, struct buffer *buf,
     const int bmargin = term->height - term->margins.bottom;
     const int line_count = end_line - start_line;
 
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
     const uint32_t _bg = !term->reverse ? term->colors.bg : term->colors.fg;
     uint16_t alpha = term->colors.alpha;
 
@@ -1699,7 +1700,7 @@ render_ime_preedit_for_seat(struct terminal *term, struct seat *seat,
     if (unlikely(term->is_searching))
         return;
 
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
 
     /* Adjust cursor position to viewport */
     struct coord cursor;
@@ -1970,7 +1971,8 @@ render_overlay(struct terminal *term)
     case OVERLAY_FLASH:
         color = color_hex_to_pixman_with_alpha(
                 term->conf->colors.flash,
-                term->conf->colors.flash_alpha, render_do_linear_blending(term));
+                term->conf->colors.flash_alpha,
+                wayl_do_linear_blending(term->wl, term->conf));
         break;
 
     case OVERLAY_NONE:
@@ -2312,7 +2314,7 @@ render_osd(struct terminal *term, const struct wayl_sub_surface *sub_surf,
     pixman_image_set_clip_region32(buf->pix[0], &clip);
     pixman_region32_fini(&clip);
 
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
     uint16_t alpha = _bg >> 24 | (_bg >> 24 << 8);
     pixman_color_t bg = color_hex_to_pixman_with_alpha(_bg, alpha, gamma_correct);
     pixman_image_fill_rectangles(
@@ -2453,7 +2455,7 @@ render_csd_border(struct terminal *term, enum csd_surface surf_idx,
     if (info->width == 0 || info->height == 0)
         return;
 
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
 
     {
         /* Fully transparent - no need to do a color space transform */
@@ -2542,7 +2544,7 @@ get_csd_button_fg_color(const struct terminal *term)
     }
 
     return color_hex_to_pixman_with_alpha(
-        _color, alpha, render_do_linear_blending(term));
+        _color, alpha, wayl_do_linear_blending(term->wl, term->conf));
 }
 
 static void
@@ -2819,7 +2821,7 @@ render_csd_button(struct terminal *term, enum csd_surface surf_idx,
     if (!term->visual_focus)
         _color = color_dim(term, _color);
 
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
     pixman_color_t color = color_hex_to_pixman_with_alpha(_color, alpha, gamma_correct);
     render_csd_part(term, surf->surf, buf, info->width, info->height, &color);
 
@@ -3678,7 +3680,7 @@ render_search_box(struct terminal *term)
         : term->conf->colors.use_custom.search_box_no_match;
 
     /* Background - yellow on empty/match, red on mismatch (default) */
-    const bool gamma_correct = render_do_linear_blending(term);
+    const bool gamma_correct = wayl_do_linear_blending(term->wl, term->conf);
     const pixman_color_t color = color_hex_to_pixman(
         is_match
         ? (custom_colors
@@ -5246,11 +5248,4 @@ render_xcursor_set(struct seat *seat, struct terminal *term,
     seat->pointer.shape = shape;
     seat->pointer.xcursor_pending = true;
     return true;
-}
-
-bool
-render_do_linear_blending(const struct terminal *term)
-{
-    return term->conf->gamma_correct &&
-           term->wl->color_management.img_description != NULL;
 }
