@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.22.3](#1-22-3)
 * [1.22.2](#1-22-2)
 * [1.22.1](#1-22-1)
 * [1.22.0](#1-22-0)
@@ -62,7 +62,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
+## 1.22.3
+
 ### Added
 
 * `auto` to the `tweak.surface-bit-depth` option.
@@ -76,17 +77,11 @@
   surfaces otherwise.
 
 
-### Deprecated
-### Removed
 ### Fixed
 
 * Inaccurate colors when `gamma-correct-blending=yes` ([#2082][2082]).
 
 [2082]: https://codeberg.org/dnkl/foot/issues/2082
-
-
-### Security
-### Contributors
 
 
 ## 1.22.2
