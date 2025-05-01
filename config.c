@@ -2809,12 +2809,19 @@ parse_section_tweak(struct context *ctx)
 
     else if (streq(key, "surface-bit-depth")) {
         _Static_assert(sizeof(conf->tweak.surface_bit_depth) == sizeof(int),
-            "enum is not 32-bit");
+                       "enum is not 32-bit");
 
+#if defined(HAVE_PIXMAN_RGBA_16)
+        return value_to_enum(
+                ctx,
+                (const char *[]){"auto", "8-bit", "10-bit", "16-bit", NULL},
+                (int *)&conf->tweak.surface_bit_depth);
+#else
         return value_to_enum(
                 ctx,
                 (const char *[]){"auto", "8-bit", "10-bit", NULL},
                 (int *)&conf->tweak.surface_bit_depth);
+#endif
     }
 
     else {

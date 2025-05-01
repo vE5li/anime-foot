@@ -207,7 +207,7 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	Compared to the default (disabled), bright glyphs on a dark
 	background will appear thicker, and dark glyphs on a light
 	background will appear thinner.
-
+	
 	FreeType can limit the effect of the latter, with a technique
 	called stem darkening. It is only available for CFF fonts
 	(OpenType, .otf) and disabled by default (in FreeType). You can
@@ -221,12 +221,13 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	font designer set the font weight based on incorrect rendering.
 	
 	In order to represent colors faithfully, higher precision image
-	buffers are required. By default, foot will use 10-bit color
-	channels, if available, when gamma-correct blending is
-	enabled. However, the high precision buffers are slow; if you want
-	to use gamma-correct blending, but prefer speed (throughput and
-	input latency) over accurate colors, you can force 8-bit color
-	channels by setting *tweak.surface-bit-depth=8-bit*.
+	buffers are required. By default, foot will use either 16-bit, or
+	10-bit color channels, depending on availability, when
+	gamma-correct blending is enabled. However, the high precision
+	buffers are slow; if you want to use gamma-correct blending, but
+	prefer speed (throughput and input latency) over accurate colors,
+	you can force 8-bit color channels by setting
+	*tweak.surface-bit-depth=8-bit*.
 	
 	Default: _no_.
 
@@ -2023,7 +2024,7 @@ any of these options.
 
 *surface-bit-depth*
 	Selects which RGB bit depth to use for image buffers. One of
-	*auto*, *8-bit*, or *10-bit*.
+	*auto*, *8-bit*, *10-bit* or *16-bit*.
 	
 	*auto* chooses bit depth depending on other settings, and
 	availability.
@@ -2033,12 +2034,14 @@ any of these options.
 	
 	*10-bit* uses 10 bits for each RGB channel, and 2 bits for the
 	alpha channel. Thus, it provides higher precision color channels,
-	but a lower precision alpha channel. It is the default when
-	*gamma-correct-blending=yes*, if supported by the compositor.
+	but a lower precision alpha channel.
 	
-	Note that *10-bit* is much slower than *8-bit*; if you want to use
-	gamma-correct blending, and if you prefer speed (throughput and
-	input latency) over accurate colors, you can set
+	*16-bit* 16 bits for each color channel, alpha included. If
+	available, this is the default when *gamma-correct-blending=yes*.
+	
+	Note that both *10-bit* and *16-bit* are much slower than *8-bit*;
+	if you want to use gamma-correct blending, and if you prefer speed
+	(throughput and input latency) over accurate colors, you can set
 	*surface-bit-depth=8-bit* explicitly.
 	
 	Default: _auto_

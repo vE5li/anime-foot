@@ -1082,7 +1082,11 @@ reload_fonts(struct terminal *term, bool resize_grid)
          * an a2r10g0b10 type of surface, since we need more than 2
          * bits for alpha.
          */
+#if defined(HAVE_PIXMAN_RGBA_16)
+        options->color_glyphs.format = PIXMAN_a16b16g16r16;
+#else
         options->color_glyphs.format = PIXMAN_rgba_float;
+#endif
     }
 
     struct fcft_font *fonts[4];
@@ -1259,7 +1263,7 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
 
     const enum shm_bit_depth desired_bit_depth =
         conf->tweak.surface_bit_depth == SHM_BITS_AUTO
-            ? wayl_do_linear_blending(wayl, conf) ? SHM_BITS_10 : SHM_BITS_8
+            ? wayl_do_linear_blending(wayl, conf) ? SHM_BITS_16 : SHM_BITS_8
             : conf->tweak.surface_bit_depth;
 
     const struct color_theme *theme = NULL;
