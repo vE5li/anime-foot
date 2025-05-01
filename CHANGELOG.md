@@ -1,6 +1,7 @@
 # Changelog
 
 * [Unreleased](#unreleased)
+* [1.22.3](#1-22-3)
 * [1.22.2](#1-22-2)
 * [1.22.1](#1-22-1)
 * [1.22.0](#1-22-0)
@@ -84,7 +85,6 @@
   - paper-color
   - selenized
   - solarized
-* `auto` to the `tweak.surface-bit-depth` option.
 
 [2025]: https://codeberg.org/dnkl/foot/issues/2025
 
@@ -92,10 +92,6 @@
 ### Changed
 
 * `cursor.color` moved to `colors.cursor`.
-* `gamma-correct-blending` now defaults to `no` instead of `yes`.
-* `tweak.surface-bit-depth` default value changed to `auto`; uses
-  10-bit surfaces when `gamma-correct-blending=yes`, and 8-bit
-  surfaces otherwise.
 
 
 ### Deprecated
@@ -105,14 +101,30 @@
 
 ### Removed
 ### Fixed
+### Security
+### Contributors
+
+
+## 1.22.3
+
+### Added
+
+* `auto` to the `tweak.surface-bit-depth` option.
+
+
+### Changed
+
+* `gamma-correct-blending` now defaults to `no` instead of `yes`.
+* `tweak.surface-bit-depth` default value changed to `auto`; uses
+  10-bit surfaces when `gamma-correct-blending=yes`, and 8-bit
+  surfaces otherwise.
+
+
+### Fixed
 
 * Inaccurate colors when `gamma-correct-blending=yes` ([#2082][2082]).
 
 [2082]: https://codeberg.org/dnkl/foot/issues/2082
-
-
-### Security
-### Contributors
 
 
 ## 1.22.2
