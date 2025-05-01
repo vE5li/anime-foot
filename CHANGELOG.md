@@ -91,6 +91,7 @@
 ### Changed
 
 * `cursor.color` moved to `colors.cursor`.
+* `gamma-correct-blending` now defaults to `no` instead of `yes`.
 
 
 ### Deprecated
