@@ -95,6 +95,9 @@
 ### Changed
 
 * `cursor.color` moved to `colors.cursor`.
+* OSC-11 without an alpha value will now restore the configured
+  (i.e. from `foot.ini`) alpha, rather than keeping whatever the
+  current alpha value is, unchanged.
 
 
 ### Deprecated

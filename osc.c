@@ -1455,15 +1455,20 @@ osc_dispatch(struct terminal *term)
 
         case 11:
             term->colors.bg = color;
-            if (have_alpha) {
-                const bool changed = term->colors.alpha != alpha;
-                term->colors.alpha = alpha;
-
-                if (changed) {
-                    wayl_win_alpha_changed(term->window);
-                    term_font_subpixel_changed(term);
-                }
+            if (!have_alpha) {
+                alpha = term->colors.active_theme == COLOR_THEME1
+                    ? term->conf->colors.alpha
+                    : term->conf->colors2.alpha;
             }
+
+            const bool changed = term->colors.alpha != alpha;
+            term->colors.alpha = alpha;
+
+            if (changed) {
+                wayl_win_alpha_changed(term->window);
+                term_font_subpixel_changed(term);
+            }
+
             term_damage_color(term, COLOR_DEFAULT, 0);
             term_damage_margins(term);
             break;
