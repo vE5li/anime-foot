@@ -2247,7 +2247,14 @@ wayl_flush(struct wayland *wayl)
         }
 
         if (errno != EAGAIN) {
-            LOG_ERRNO("failed to flush wayland socket");
+            const int saved_errno = errno;
+
+            if (errno == EPIPE) {
+                wl_display_read_events(wayl->display);
+                wl_display_dispatch_pending(wayl->display);
+            }
+
+            LOG_ERRNO_P(saved_errno, "failed to flush wayland socket");
             return;
         }
 
