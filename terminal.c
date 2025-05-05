@@ -1312,7 +1312,6 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
             .cursor_bg = (theme->use_custom.cursor ? 1u << 31 : 0) | theme->cursor.cursor,
             .selection_fg = theme->selection_fg,
             .selection_bg = theme->selection_bg,
-            .use_custom_selection = theme->use_custom.selection,
             .active_theme = conf->initial_color_theme,
         },
         .color_stack = {
@@ -4714,6 +4713,5 @@ term_theme_apply(struct terminal *term, const struct color_theme *theme)
     term->colors.cursor_bg = (theme->use_custom.cursor ? 1u << 31 : 0) | theme->cursor.cursor;
     term->colors.selection_fg = theme->selection_fg;
     term->colors.selection_bg = theme->selection_bg;
-    term->colors.use_custom_selection = theme->use_custom.selection;
     memcpy(term->colors.table, theme->table, sizeof(term->colors.table));
 }

@@ -1480,12 +1480,10 @@ osc_dispatch(struct terminal *term)
 
         case 17:
             term->colors.selection_bg = color;
-            term->colors.use_custom_selection = true;
             break;
 
         case 19:
             term->colors.selection_fg = color;
-            term->colors.use_custom_selection = true;
             break;
         }
 
@@ -1589,13 +1587,11 @@ osc_dispatch(struct terminal *term)
     case 117:
         LOG_DBG("resetting selection background color");
         term->colors.selection_bg = term->conf->colors.selection_bg;
-        term->colors.use_custom_selection = term->conf->colors.use_custom.selection;
         break;
 
     case 119:
         LOG_DBG("resetting selection foreground color");
         term->colors.selection_fg = term->conf->colors.selection_fg;
-        term->colors.use_custom_selection = term->conf->colors.use_custom.selection;
         break;
 
     case 133:

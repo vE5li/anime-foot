@@ -694,51 +694,75 @@ render_cell(struct terminal *term, pixman_image_t *pix,
     const int x = term->margins.left + col * width;
     const int y = term->margins.top + row_no * height;
 
-    bool is_selected = cell->attrs.selected;
-
     uint32_t _fg = 0;
     uint32_t _bg = 0;
 
     uint16_t alpha = 0xffff;
+    const bool is_selected = cell->attrs.selected;
 
-    if (is_selected && term->colors.use_custom_selection) {
-        _fg = term->colors.selection_fg;
-        _bg = term->colors.selection_bg;
+    /* Use cell specific color, if set, otherwise the default colors (possible reversed) */
+    switch (cell->attrs.fg_src) {
+    case COLOR_RGB:
+        _fg = cell->attrs.fg;
+        break;
+
+    case COLOR_BASE16:
+    case COLOR_BASE256:
+        xassert(cell->attrs.fg < ALEN(term->colors.table));
+        _fg = term->colors.table[cell->attrs.fg];
+        break;
+
+    case COLOR_DEFAULT:
+        _fg = term->reverse ? term->colors.bg : term->colors.fg;
+        break;
+    }
+
+    switch (cell->attrs.bg_src) {
+    case COLOR_RGB:
+        _bg = cell->attrs.bg;
+        break;
+
+    case COLOR_BASE16:
+    case COLOR_BASE256:
+        xassert(cell->attrs.bg < ALEN(term->colors.table));
+        _bg = term->colors.table[cell->attrs.bg];
+        break;
+
+    case COLOR_DEFAULT:
+        _bg = term->reverse ? term->colors.fg : term->colors.bg;
+        break;
+    }
+
+    if (unlikely(is_selected)) {
+        const uint32_t cell_fg = _fg;
+        const uint32_t cell_bg = _bg;
+
+        const bool custom_fg = term->colors.selection_fg >> 24 == 0;
+        const bool custom_bg = term->colors.selection_bg >> 24 == 0;
+        const bool custom_both = custom_fg && custom_bg;
+
+        if (custom_both) {
+            _fg = term->colors.selection_fg;
+            _bg = term->colors.selection_bg;
+        } else if (custom_bg) {
+            _bg = term->colors.selection_bg;
+            _fg = cell->attrs.reverse ? cell_bg : cell_fg;
+        } else if (custom_fg) {
+            _fg = term->colors.selection_fg;
+            _bg = cell->attrs.reverse ? cell_fg : cell_bg;
+        } else {
+            _bg = cell_fg;
+            _fg = cell_bg;
+        }
+
+        if (unlikely(_fg == _bg)) {
+            /* Invert bg when selected/highlighted text has same fg/bg */
+            _bg = ~_bg;
+            alpha = 0xffff;
+        }
+
     } else {
-        /* Use cell specific color, if set, otherwise the default colors (possible reversed) */
-        switch (cell->attrs.fg_src) {
-        case COLOR_RGB:
-            _fg = cell->attrs.fg;
-            break;
-
-        case COLOR_BASE16:
-        case COLOR_BASE256:
-            xassert(cell->attrs.fg < ALEN(term->colors.table));
-            _fg = term->colors.table[cell->attrs.fg];
-            break;
-
-        case COLOR_DEFAULT:
-            _fg = term->reverse ? term->colors.bg : term->colors.fg;
-            break;
-        }
-
-        switch (cell->attrs.bg_src) {
-        case COLOR_RGB:
-            _bg = cell->attrs.bg;
-            break;
-
-        case COLOR_BASE16:
-        case COLOR_BASE256:
-            xassert(cell->attrs.bg < ALEN(term->colors.table));
-            _bg = term->colors.table[cell->attrs.bg];
-            break;
-
-        case COLOR_DEFAULT:
-            _bg = term->reverse ? term->colors.fg : term->colors.bg;
-            break;
-        }
-
-        if (cell->attrs.reverse ^ is_selected) {
+        if (unlikely(cell->attrs.reverse)) {
             uint32_t swap = _fg;
             _fg = _bg;
             _bg = swap;
@@ -804,12 +828,6 @@ render_cell(struct terminal *term, pixman_image_t *pix,
              */
             xassert(alpha == 0xffff);
         }
-    }
-
-    if (unlikely(is_selected && _fg == _bg)) {
-        /* Invert bg when selected/highlighted text has same fg/bg */
-        _bg = ~_bg;
-        alpha = 0xffff;
     }
 
     if (cell->attrs.dim)

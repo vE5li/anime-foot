@@ -103,6 +103,10 @@
   current alpha value is, unchanged.
 * `gamma-correct-blending=yes` now defaults to `16-bit` image buffers,
   instead of `10-bit`.
+* Allow setting either selection background, or selection foreground,
+  only ([#1846][1846]).
+
+[1846]: https://codeberg.org/dnkl/foot/issues/1846
 
 
 ### Deprecated

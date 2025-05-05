@@ -404,7 +404,6 @@ struct colors {
     uint32_t cursor_bg;  /* cursor color */
     uint32_t selection_fg;
     uint32_t selection_bg;
-    bool use_custom_selection;
     enum which_color_theme active_theme;
 };
 

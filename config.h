@@ -180,7 +180,6 @@ struct color_theme {
 
     struct {
         bool cursor:1;
-        bool selection:1;
         bool jump_label:1;
         bool scrollback_indicator:1;
         bool url:1;

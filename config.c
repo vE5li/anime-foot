@@ -3403,7 +3403,6 @@ config_load(struct config *conf, const char *conf_path,
                 .cursor = 0,
             },
             .use_custom = {
-                .selection = false,
                 .jump_label = false,
                 .scrollback_indicator = false,
                 .url = false,
@@ -3592,10 +3591,6 @@ config_load(struct config *conf, const char *conf_path,
 
     if (!config_override_apply(conf, overrides, errors_are_fatal))
         ret = !errors_are_fatal;
-
-    conf->colors.use_custom.selection =
-        conf->colors.selection_fg >> 24 == 0 &&
-        conf->colors.selection_bg >> 24 == 0;
 
     if (ret && conf->fonts[0].count == 0) {
         struct config_font font;
