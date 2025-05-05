@@ -1113,8 +1113,8 @@ Note that values are not inherited. That is, if you set a value in
 inherited by *colors2*.
 
 In the context of private mode 2031 (Dark and Light Mode detection),
-the primary theme (i.e. the *colors2* section) is considered to be the
-light theme (since the default theme is dark).
+the alternative theme (i.e. the *colors2* section) is considered to be
+the light theme (since the default, the primary theme, is dark).
 
 # SECTION: csd
 
