@@ -2769,12 +2769,10 @@ UNITTEST
             },
             .kind = SELECTION_NONE,
             .auto_scroll = {
-                .fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK),
+                .fd = -1,
             },
         },
     };
-
-    xassert(term.selection.auto_scroll.fd >= 0);
 
 #define populate_scrollback() do {                                      \
         for (int i = 0; i < scrollback_rows; i++) {                     \
@@ -2865,7 +2863,7 @@ UNITTEST
 
     /* Cleanup */
     tll_free(term.normal.sixel_images);
-    close(term.selection.auto_scroll.fd);
+    xassert(term.selection.auto_scroll.fd == -1);
     for (int i = 0; i < scrollback_rows; i++)
         grid_row_free(term.normal.rows[i]);
     free(term.normal.rows);
