@@ -116,6 +116,10 @@
 
 ### Removed
 ### Fixed
+
+* `REP`: wrong width of repeated multi-codepoint graphemes.
+
+
 ### Security
 ### Contributors
 

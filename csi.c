@@ -799,7 +799,17 @@ csi_dispatch(struct terminal *term, uint8_t final)
                 int count = vt_param_get(term, 0, 1);
                 LOG_DBG("REP: '%lc' %d times", (wint_t)term->vt.last_printed, count);
 
-                const int width = c32width(term->vt.last_printed);
+                int width;
+
+                if (term->vt.last_printed >= CELL_COMB_CHARS_LO) {
+                    const struct composed *comp = composed_lookup(
+                        term->composed, term->vt.last_printed - CELL_COMB_CHARS_LO);
+
+                    xassert(comp != NULL);
+                    width = comp->forced_width > 0 ? comp->forced_width : comp->width;
+                } else
+                    width = c32width(term->vt.last_printed);
+
                 if (width > 0) {
                     for (int i = 0; i < count; i++)
                         term_print(term, term->vt.last_printed, width, false);
