@@ -105,8 +105,11 @@
   instead of `10-bit`.
 * Allow setting either selection background, or selection foreground,
   only ([#1846][1846]).
+* Drop required version of libxkbcommon from 1.8.0 back to 1.0.0
+  ([#2103][2103]).
 
 [1846]: https://codeberg.org/dnkl/foot/issues/1846
+[2103]: https://codeberg.org/dnkl/foot/issues/2103
 
 
 ### Deprecated

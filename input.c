@@ -40,6 +40,7 @@
 #include "url-mode.h"
 #include "util.h"
 #include "vt.h"
+#include "xkbcommon-vmod.h"
 #include "xmalloc.h"
 #include "xsnprintf.h"
 
