@@ -1480,8 +1480,16 @@ handle_global(void *data, struct wl_registry *registry,
         if (!verify_iface_version(interface, version, required))
             return;
 
+#if defined(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DND_ASK_SINCE_VERSION)  /* 1.42 */
+        const uint32_t preferred = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DND_ASK_SINCE_VERSION;
+#else
+        const uint32_t preferred = required;
+#endif
+
+        wayl->shape_manager_version = min(required, preferred);
         wayl->cursor_shape_manager = wl_registry_bind(
-            wayl->registry, name, &wp_cursor_shape_manager_v1_interface, required);
+            wayl->registry, name, &wp_cursor_shape_manager_v1_interface,
+            min(required, preferred));
     }
 
     else if (streq(interface, wp_single_pixel_buffer_manager_v1_interface.name)) {

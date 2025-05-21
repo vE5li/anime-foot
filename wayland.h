@@ -460,6 +460,7 @@ struct wayland {
     struct wp_fractional_scale_manager_v1 *fractional_scale_manager;
 
     struct wp_cursor_shape_manager_v1 *cursor_shape_manager;
+    int shape_manager_version;
 
     struct wp_single_pixel_buffer_manager_v1 *single_pixel_manager;
 

@@ -3571,7 +3571,9 @@ term_xcursor_update_for_seat(struct terminal *term, struct seat *seat)
         if (seat->pointer.hidden)
             shape = CURSOR_SHAPE_HIDDEN;
 
-        else if (cursor_string_to_server_shape(term->mouse_user_cursor) != 0 ||
+        else if (cursor_string_to_server_shape(
+            term->mouse_user_cursor,
+            term->wl->shape_manager_version) != 0 ||
                  render_xcursor_is_valid(seat, term->mouse_user_cursor))
         {
             shape = CURSOR_SHAPE_CUSTOM;

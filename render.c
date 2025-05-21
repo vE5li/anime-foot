@@ -4929,8 +4929,9 @@ render_xcursor_update(struct seat *seat)
 
         const enum wp_cursor_shape_device_v1_shape custom_shape =
             (shape == CURSOR_SHAPE_CUSTOM && xcursor != NULL
-             ? cursor_string_to_server_shape(xcursor)
-             : 0);
+                ? cursor_string_to_server_shape(
+                    xcursor, seat->wayl->shape_manager_version)
+                : 0);
 
         if (shape != CURSOR_SHAPE_CUSTOM || custom_shape != 0) {
             xassert(custom_shape == 0 || shape == CURSOR_SHAPE_CUSTOM);

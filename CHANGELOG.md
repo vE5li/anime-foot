@@ -90,6 +90,7 @@
 * `16-bit` to `tweak.surface-bit-depth`. Makes foot use 16-bit image
   buffers. They provide the necessary color precision required by
   `gamma-correct-blending=yes`.
+* New cursor shapes, from `cursor-shape-v1` version 2.
 
 [2025]: https://codeberg.org/dnkl/foot/issues/2025
 [1975]: https://codeberg.org/dnkl/foot/issues/1975
