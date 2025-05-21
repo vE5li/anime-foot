@@ -1134,7 +1134,7 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
     else
         term_visual_focus_out(term);
 
-    if (!resized) {
+    if (!resized && !term->render.pending.grid) {
         /*
          * If we didn't resize, we won't be committing a new surface
          * anytime soon. Some compositors require a commit in

@@ -121,6 +121,10 @@
 ### Fixed
 
 * `REP`: wrong width of repeated multi-codepoint graphemes.
+* Incorrect surface commit after a configure event, under certain
+  conditions ([#2105][2105]).
+
+[2105]: https://codeberg.org/dnkl/foot/issues/2105
 
 
 ### Security
