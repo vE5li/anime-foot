@@ -72,7 +72,7 @@ cursor_string_to_server_shape(const char *xcursor, int bound_version)
         [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_VERTICAL_TEXT] = {"vertical-text"},
         [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_ALIAS] = {"alias", "dnd-link"},
         [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_COPY] = {"copy", "dnd-copy"},
-        [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_MOVE] = {"move"},  /* dnd-move? */
+        [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_MOVE] = {"move", "dnd-move"},
         [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NO_DROP] = {"no-drop", "dnd-no-drop"},
         [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NOT_ALLOWED] = {"not-allowed", "crossed_circle"},
         [WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_GRAB] = {"grab", "hand1"},
