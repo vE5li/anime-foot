@@ -933,21 +933,34 @@ parse_section_main(struct context *ctx)
 
     else if (streq(key, "pad")) {
         unsigned x, y;
-        char mode[16] = {0};
+        char mode[64] = {0};
+        int ret = sscanf(value, "%ux%u %63s", &x, &y, mode);
 
-        int ret = sscanf(value, "%ux%u %15s", &x, &y, mode);
-        bool center = strcasecmp(mode, "center") == 0;
-        bool invalid_mode = !center && mode[0] != '\0';
+        enum center_when center = CENTER_NEVER;
 
-        if ((ret != 2 && ret != 3) || invalid_mode) {
+        if (ret == 3) {
+            if (strcasecmp(mode, "center") == 0)
+                center = CENTER_ALWAYS;
+            else if (strcasecmp(mode, "center-when-fullscreen") == 0)
+                center = CENTER_FULLSCREEN;
+            else if (strcasecmp(mode, "center-when-maximized-and-fullscreen") == 0)
+                center = CENTER_MAXIMIZED_AND_FULLSCREEN;
+            else
+                center = CENTER_INVALID;
+        }
+
+        if ((ret != 2 && ret != 3) || center == CENTER_INVALID) {
             LOG_CONTEXTUAL_ERR(
-                "invalid padding (must be in the form PAD_XxPAD_Y [center])");
+                "invalid padding (must be in the form PAD_XxPAD_Y "
+                "[center|"
+                "center-when-fullscreen|"
+                "center-when-maximized-and-fullscreen])");
             return false;
         }
 
         conf->pad_x = x;
         conf->pad_y = y;
-        conf->center = center;
+        conf->center_when = ret == 2 ? CENTER_NEVER : center;
         return true;
     }
 
@@ -3339,6 +3352,7 @@ config_load(struct config *conf, const char *conf_path,
         },
         .pad_x = 0,
         .pad_y = 0,
+        .center_when = CENTER_MAXIMIZED_AND_FULLSCREEN,
         .resize_by_cells = true,
         .resize_keep_grid = true,
         .resize_delay_ms = 100,

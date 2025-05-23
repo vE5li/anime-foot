@@ -289,18 +289,29 @@ empty string to be set, but it must be quoted: *KEY=""*)
 
 *pad*
 	Padding between border and glyphs, in pixels (subject to output
-	scaling), in the form _XxY_.
+	scaling), in the form
+	
+	```
+	_XxY_ [center | center-when-fullscreen | center-when-maximized-and-fullscreen]
+	```
 	
 	This will add _at least_ X pixels on both the left and right
-	sides, and Y pixels on the top and bottom sides. The grid content
-	will be anchored in the top left corner. I.e. if the window
-	manager forces an odd window size on foot, the additional pixels
-	will be added to the right and bottom sides.
+	sides, and Y pixels on the top and bottom sides.
 	
-	To instead center the grid content, append *center* (e.g. *pad=5x5
-	center*).
+	When no centering is specified, the grid content is anchored to
+	the top left corner. I.e. if the window manager forces an odd
+	window size on foot, the additional pixels will be added to the
+	right and bottom sides.
 	
-	Default: _0x0_.
+	If *center* is specified, the grid content is instead
+	centered. This may cause "jumpiness" when resizing the window.
+	
+	With *center-when-fullscreen* and
+	*center-when-maximized-and-fullscreen*, the grid is anchored to
+	the top left corner, unless the window is maximized, or
+	fullscreened.
+	
+	Default: _0x0_ center-when-maximized-and-fullscreen.
 
 *resize-delay-ms*
 

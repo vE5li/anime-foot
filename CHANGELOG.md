@@ -91,9 +91,13 @@
   buffers. They provide the necessary color precision required by
   `gamma-correct-blending=yes`.
 * New cursor shapes, from `cursor-shape-v1` version 2.
+* `center-when-fullscreen` and `center-when-maximized-and-fullscreen`
+  to the `pad` option. This allows you to configure when the grid is
+  centered in more detail ([#2111][2111]).
 
 [2025]: https://codeberg.org/dnkl/foot/issues/2025
 [1975]: https://codeberg.org/dnkl/foot/issues/1975
+[2111]: https://codeberg.org/dnkl/foot/issues/2111
 
 
 ### Changed

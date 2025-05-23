@@ -4596,9 +4596,12 @@ render_resize(struct terminal *term, int width, int height, uint8_t opts)
     const int total_x_pad = term->width - grid_width;
     const int total_y_pad = term->height - grid_height;
 
-    const bool centered_padding = term->conf->center
-                                  || term->window->is_fullscreen
-                                  || term->window->is_maximized;
+    const enum center_when center = term->conf->center_when;
+    const bool centered_padding =
+        center == CENTER_ALWAYS ||
+        (center == CENTER_MAXIMIZED_AND_FULLSCREEN &&
+         (term->window->is_fullscreen || term->window->is_maximized)) ||
+        (center == CENTER_FULLSCREEN && term->window->is_fullscreen);
 
     if (centered_padding && !term->window->is_resizing) {
         term->margins.left = total_x_pad / 2;

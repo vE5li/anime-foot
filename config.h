@@ -201,6 +201,14 @@ enum shm_bit_depth {
     SHM_BITS_16,
 };
 
+enum center_when {
+    CENTER_INVALID,
+    CENTER_NEVER,
+    CENTER_FULLSCREEN,
+    CENTER_MAXIMIZED_AND_FULLSCREEN,
+    CENTER_ALWAYS,
+};
+
 struct config {
     char *term;
     char *shell;
@@ -218,7 +226,7 @@ struct config {
 
     unsigned pad_x;
     unsigned pad_y;
-    bool center;
+    enum center_when center_when;
 
     bool resize_by_cells;
     bool resize_keep_grid;
