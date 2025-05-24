@@ -1502,13 +1502,13 @@ handle_global(void *data, struct wl_registry *registry,
             &wp_single_pixel_buffer_manager_v1_interface, required);
     }
 
-    else if (streq(interface, xdg_toplevel_icon_v1_interface.name)) {
+    else if (streq(interface, xdg_toplevel_icon_manager_v1_interface.name)) {
         const uint32_t required = 1;
         if (!verify_iface_version(interface, version, required))
             return;
 
         wayl->toplevel_icon_manager = wl_registry_bind(
-            wayl->registry, name, &xdg_toplevel_icon_v1_interface, required);
+            wayl->registry, name, &xdg_toplevel_icon_manager_v1_interface, required);
     }
 
     else if (streq(interface, xdg_system_bell_v1_interface.name)) {
