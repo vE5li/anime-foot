@@ -67,6 +67,7 @@ quirk_weston_csd_off(struct terminal *term)
         quirk_weston_subsurface_desync_off(term->window->csd.surface[i].sub);
 }
 
+#if 0
 static bool
 is_sway(void)
 {
@@ -82,13 +83,4 @@ is_sway(void)
 
     return is_sway;
 }
-
-void
-quirk_sway_subsurface_unmap(struct terminal *term)
-{
-    return;
-    if (!is_sway())
-        return;
-
-    wl_surface_damage_buffer(term->window->surface.surf, 0, 0, INT32_MAX, INT32_MAX);
-}
+#endif

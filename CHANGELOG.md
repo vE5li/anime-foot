@@ -123,6 +123,11 @@
 
 
 ### Removed
+
+* Subsurface unmap quirk for Sway. This was a workaround added in
+  1.12.1, for Sway issue [#6960][sway-6960].
+
+
 ### Fixed
 
 * `REP`: wrong width of repeated multi-codepoint graphemes.
