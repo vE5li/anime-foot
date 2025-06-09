@@ -73,6 +73,8 @@
   `key-bindings.color-theme-toggle` key bindings. These can be used to
   switch between the primary and alternative color themes. They are
   not bound by default.
+* Sending `SIGUSR1` to the foot process now triggers a theme switch
+  (in server mode, **all** instances toggles their themes).
 * Support for private mode 2031 - [_Dark and Light Mode
   Detection_](https://contour-terminal.org/vt-extensions/color-palette-update-notifications/)
   ([#2025][2025])

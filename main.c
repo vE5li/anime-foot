@@ -45,6 +45,19 @@ fdm_sigint(struct fdm *fdm, int signo, void *data)
     return true;
 }
 
+static bool
+fdm_sigusr1(struct fdm *fdm, int signo, void *data)
+{
+    struct wayland *wayl = data;
+
+    tll_foreach(wayl->terms, it) {
+        struct terminal *term = it->item;
+        term_theme_toggle(term);
+    }
+
+    return true;
+}
+
 static void
 print_usage(const char *prog_name)
 {
@@ -608,6 +621,9 @@ main(int argc, char *const *argv)
         goto out;
     }
 
+    if (!fdm_signal_add(fdm, SIGUSR1, &fdm_sigusr1, wayl))
+        goto out;
+
     struct sigaction sig_ign = {.sa_handler = SIG_IGN};
     sigemptyset(&sig_ign.sa_mask);
     if (sigaction(SIGHUP, &sig_ign, NULL) < 0 ||
@@ -643,6 +659,7 @@ out:
     wayl_destroy(wayl);
     key_binding_manager_destroy(key_binding_manager);
     reaper_destroy(reaper);
+    fdm_signal_del(fdm, SIGUSR1);
     fdm_signal_del(fdm, SIGTERM);
     fdm_signal_del(fdm, SIGINT);
     fdm_destroy(fdm);
