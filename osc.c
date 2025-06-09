@@ -73,16 +73,19 @@ osc_to_clipboard(struct terminal *term, const char *target,
     }
 
     char *decoded = base64_decode(base64_data, NULL);
-    if (decoded == NULL) {
-        if (errno == EINVAL)
-            LOG_WARN("OSC: invalid clipboard data: %s", base64_data);
-        else
-            LOG_ERRNO("base64_decode() failed");
+    if (decoded == NULL || decoded[0] == '\0') {
+        if (decoded == NULL) {
+            if (errno == EINVAL)
+                LOG_WARN("OSC: invalid clipboard data: %s", base64_data);
+            else
+                LOG_ERRNO("base64_decode() failed");
+        }
 
         if (to_clipboard)
             selection_clipboard_unset(seat);
         if (to_primary)
             selection_primary_unset(seat);
+        free(decoded);
         return;
     }
 

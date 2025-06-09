@@ -114,6 +114,7 @@
   only ([#1846][1846]).
 * Drop required version of libxkbcommon from 1.8.0 back to 1.0.0
   ([#2103][2103]).
+* OSC-52: an empty payload now clears the clipboard.
 
 [1846]: https://codeberg.org/dnkl/foot/issues/1846
 [2103]: https://codeberg.org/dnkl/foot/issues/2103
