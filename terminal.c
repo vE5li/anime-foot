@@ -2074,6 +2074,19 @@ erase_line(struct terminal *term, struct row *row)
     row->shell_integration.cmd_end = -1;
 }
 
+static void
+term_theme_apply(struct terminal *term, const struct color_theme *theme)
+{
+    term->colors.fg = theme->fg;
+    term->colors.bg = theme->bg;
+    term->colors.alpha = theme->alpha;
+    term->colors.cursor_fg = (theme->use_custom.cursor ? 1u << 31 : 0) | theme->cursor.text;
+    term->colors.cursor_bg = (theme->use_custom.cursor ? 1u << 31 : 0) | theme->cursor.cursor;
+    term->colors.selection_fg = theme->selection_fg;
+    term->colors.selection_bg = theme->selection_bg;
+    memcpy(term->colors.table, theme->table, sizeof(term->colors.table));
+}
+
 void
 term_reset(struct terminal *term, bool hard)
 {
@@ -4704,14 +4717,66 @@ term_send_size_notification(struct terminal *term)
 }
 
 void
-term_theme_apply(struct terminal *term, const struct color_theme *theme)
+term_theme_switch_to_1(struct terminal *term)
 {
-    term->colors.fg = theme->fg;
-    term->colors.bg = theme->bg;
-    term->colors.alpha = theme->alpha;
-    term->colors.cursor_fg = (theme->use_custom.cursor ? 1u << 31 : 0) | theme->cursor.text;
-    term->colors.cursor_bg = (theme->use_custom.cursor ? 1u << 31 : 0) | theme->cursor.cursor;
-    term->colors.selection_fg = theme->selection_fg;
-    term->colors.selection_bg = theme->selection_bg;
-    memcpy(term->colors.table, theme->table, sizeof(term->colors.table));
+    if (term->colors.active_theme == COLOR_THEME1)
+        return;
+
+    term_theme_apply(term, &term->conf->colors);
+    term->colors.active_theme = COLOR_THEME1;
+
+    wayl_win_alpha_changed(term->window);
+    term_font_subpixel_changed(term);
+
+    if (term->report_theme_changes)
+        term_to_slave(term, "\033[?997;1n", 9);
+
+    term_damage_view(term);
+    term_damage_margins(term);
+    render_refresh(term);
+}
+
+void
+term_theme_switch_to_2(struct terminal *term)
+{
+    if (term->colors.active_theme == COLOR_THEME2)
+        return;
+
+    term_theme_apply(term, &term->conf->colors2);
+    term->colors.active_theme = COLOR_THEME2;
+
+    wayl_win_alpha_changed(term->window);
+    term_font_subpixel_changed(term);
+
+    if (term->report_theme_changes)
+        term_to_slave(term, "\033[?997;2n", 9);
+
+    term_damage_view(term);
+    term_damage_margins(term);
+    render_refresh(term);
+}
+
+void
+term_theme_toggle(struct terminal *term)
+{
+    if (term->colors.active_theme == COLOR_THEME1) {
+        term_theme_apply(term, &term->conf->colors2);
+        term->colors.active_theme = COLOR_THEME2;
+
+        if (term->report_theme_changes)
+            term_to_slave(term, "\033[?997;2n", 9);
+    } else {
+        term_theme_apply(term, &term->conf->colors);
+        term->colors.active_theme = COLOR_THEME1;
+
+        if (term->report_theme_changes)
+            term_to_slave(term, "\033[?997;1n", 9);
+    }
+
+    wayl_win_alpha_changed(term->window);
+    term_font_subpixel_changed(term);
+
+    term_damage_view(term);
+    term_damage_margins(term);
+    render_refresh(term);
 }

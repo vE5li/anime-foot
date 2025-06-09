@@ -486,60 +486,15 @@ execute_binding(struct seat *seat, struct terminal *term,
         return true;
 
     case BIND_ACTION_THEME_SWITCH_1:
-        if (term->colors.active_theme != COLOR_THEME1) {
-            term_theme_apply(term, &term->conf->colors);
-            term->colors.active_theme = COLOR_THEME1;
-
-            wayl_win_alpha_changed(term->window);
-            term_font_subpixel_changed(term);
-
-            if (term->report_theme_changes)
-                term_to_slave(term, "\033[?997;1n", 9);
-
-            term_damage_view(term);
-            term_damage_margins(term);
-            render_refresh(term);
-        }
+        term_theme_switch_to_1(term);
         return true;
 
     case BIND_ACTION_THEME_SWITCH_2:
-        if (term->colors.active_theme != COLOR_THEME2) {
-            term_theme_apply(term, &term->conf->colors2);
-            term->colors.active_theme = COLOR_THEME2;
-
-            wayl_win_alpha_changed(term->window);
-            term_font_subpixel_changed(term);
-
-            if (term->report_theme_changes)
-                term_to_slave(term, "\033[?997;2n", 9);
-
-            term_damage_view(term);
-            term_damage_margins(term);
-            render_refresh(term);
-        }
+        term_theme_switch_to_2(term);
         return true;
 
     case BIND_ACTION_THEME_TOGGLE:
-        if (term->colors.active_theme == COLOR_THEME1) {
-            term_theme_apply(term, &term->conf->colors2);
-            term->colors.active_theme = COLOR_THEME2;
-
-            if (term->report_theme_changes)
-                term_to_slave(term, "\033[?997;2n", 9);
-        } else {
-            term_theme_apply(term, &term->conf->colors);
-            term->colors.active_theme = COLOR_THEME1;
-
-            if (term->report_theme_changes)
-                term_to_slave(term, "\033[?997;1n", 9);
-        }
-
-        wayl_win_alpha_changed(term->window);
-        term_font_subpixel_changed(term);
-
-        term_damage_view(term);
-        term_damage_margins(term);
-        render_refresh(term);
+        term_theme_toggle(term);
         return true;
 
     case BIND_ACTION_SELECT_BEGIN:

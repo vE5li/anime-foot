@@ -984,7 +984,9 @@ void term_enable_size_notifications(struct terminal *term);
 void term_disable_size_notifications(struct terminal *term);
 void term_send_size_notification(struct terminal *term);
 
-void term_theme_apply(struct terminal *term, const struct color_theme *theme);
+void term_theme_switch_to_1(struct terminal *term);
+void term_theme_switch_to_2(struct terminal *term);
+void term_theme_toggle(struct terminal *term);
 
 static inline void term_reset_grapheme_state(struct terminal *term)
 {
