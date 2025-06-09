@@ -850,6 +850,7 @@ csi_dispatch(struct terminal *term, uint8_t final)
              *  - 22   ANSI color, e.g., VT525.
              *  - 28   Rectangular editing.
              *  - 29   ANSI text locator (i.e., DEC Locator mode).
+             *  - 52   Clipboard access
              *
              * Note: we report ourselves as a VT220, mainly to be able
              * to pass parameters, to indicate we support sixel, and
@@ -860,13 +861,15 @@ csi_dispatch(struct terminal *term, uint8_t final)
              *
              * Note: tertiary DA responds with "FOOT".
              */
-            if (term->conf->tweak.sixel) {
-                static const char reply[] = "\033[?62;4;22;28c";
-                term_to_slave(term, reply, sizeof(reply) - 1);
-            } else {
-                static const char reply[] = "\033[?62;22;28c";
-                term_to_slave(term, reply, sizeof(reply) - 1);
-            }
+            char reply[32];
+
+            int len = snprintf(
+                reply, sizeof(reply), "\033[?62%s;22;28%sc",
+                term->conf->tweak.sixel ? ";4" : "",
+                (term->conf->security.osc52 == OSC52_ENABLED ||
+                 term->conf->security.osc52 == OSC52_COPY_ENABLED ? ";52" : ""));
+
+            term_to_slave(term, reply, len);
             break;
         }
 

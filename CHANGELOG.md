@@ -115,6 +115,9 @@
 * Drop required version of libxkbcommon from 1.8.0 back to 1.0.0
   ([#2103][2103]).
 * OSC-52: an empty payload now clears the clipboard.
+* DA (Device Attributes): include `52` in the reply, to indicate
+  OSC-52 support (when at least _copy_ has been enabled in
+  `security.osc52`).
 
 [1846]: https://codeberg.org/dnkl/foot/issues/1846
 [2103]: https://codeberg.org/dnkl/foot/issues/2103
