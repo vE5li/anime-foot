@@ -29,7 +29,7 @@ body:
   - type: input
     id: compositor
     attributes:
-      label: Compositor Version
+      label: Compositor Name and Version
       description: "The name and version of your compositor"
       placeholder: "sway version 1.9"
     validations:
