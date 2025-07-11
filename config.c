@@ -3956,9 +3956,10 @@ config_font_parse(const char *pattern, struct config_font *font)
          * both "size" and "pixelsize" being set, and we don't know
          * which one takes priority.
          */
+        FcConfig *fc_conf = FcConfigCreate();
         FcPattern *pat_copy = FcPatternDuplicate(pat);
         if (pat_copy == NULL ||
-            !FcConfigSubstitute(NULL, pat_copy, FcMatchPattern))
+            !FcConfigSubstitute(fc_conf, pat_copy, FcMatchPattern))
         {
             LOG_WARN("%s: failed to do config substitution", pattern);
         } else {
@@ -3967,6 +3968,7 @@ config_font_parse(const char *pattern, struct config_font *font)
         }
 
         FcPatternDestroy(pat_copy);
+        FcConfigDestroy(fc_conf);
 
         if (have_pt_size != FcResultMatch && have_px_size != FcResultMatch)
             pt_size = 8.0;
