@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.23.0](#1-23-0)
 * [1.22.3](#1-22-3)
 * [1.22.2](#1-22-2)
 * [1.22.1](#1-22-1)
@@ -63,7 +63,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
+## 1.23.0
+
 ### Added
 
 * `colors2` config section. This section duplicates the `colors`
@@ -143,8 +144,12 @@
 [2105]: https://codeberg.org/dnkl/foot/issues/2105
 
 
-### Security
 ### Contributors
+
+* Chen Mulong
+* Kirill Primak
+* Ryan Roden-Corrent
+* tokyo4j
 
 
 ## 1.22.3
