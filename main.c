@@ -46,13 +46,22 @@ fdm_sigint(struct fdm *fdm, int signo, void *data)
 }
 
 static bool
-fdm_sigusr1(struct fdm *fdm, int signo, void *data)
+fdm_sigusr(struct fdm *fdm, int signo, void *data)
 {
     struct wayland *wayl = data;
 
-    tll_foreach(wayl->terms, it) {
-        struct terminal *term = it->item;
-        term_theme_toggle(term);
+    xassert(signo == SIGUSR1 || signo == SIGUSR2);
+
+    if (signo == SIGUSR1) {
+        tll_foreach(wayl->terms, it) {
+            struct terminal *term = it->item;
+            term_theme_switch_to_1(term);
+         }
+    } else {
+        tll_foreach(wayl->terms, it) {
+            struct terminal *term = it->item;
+            term_theme_switch_to_2(term);
+        }
     }
 
     return true;
@@ -621,8 +630,11 @@ main(int argc, char *const *argv)
         goto out;
     }
 
-    if (!fdm_signal_add(fdm, SIGUSR1, &fdm_sigusr1, wayl))
+    if (!fdm_signal_add(fdm, SIGUSR1, &fdm_sigusr, wayl) ||
+        !fdm_signal_add(fdm, SIGUSR2, &fdm_sigusr, wayl))
+    {
         goto out;
+    }
 
     struct sigaction sig_ign = {.sa_handler = SIG_IGN};
     sigemptyset(&sig_ign.sa_mask);
