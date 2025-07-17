@@ -634,12 +634,12 @@ urls_assign_key_combos(const struct config *conf, url_list_t *urls)
 
     size_t combo_idx = 0;
 
-    tll_foreach(*urls, it) {
+    tll_rforeach(*urls, it) {
         bool id_already_seen = false;
 
         /* Look for already processed URLs where both the URI and the
          * ID matches */
-        tll_foreach(*urls, it2) {
+        tll_rforeach(*urls, it2) {
             if (&it->item == &it2->item)
                 break;
 
@@ -659,7 +659,7 @@ urls_assign_key_combos(const struct config *conf, url_list_t *urls)
          * them; if so, reuse the *same* key combo.
          */
         bool url_already_seen = false;
-        tll_foreach(*urls, it2) {
+        tll_rforeach(*urls, it2) {
             if (&it->item == &it2->item)
                 break;
 
@@ -679,7 +679,7 @@ urls_assign_key_combos(const struct config *conf, url_list_t *urls)
         free(combos[i]);
 
 #if defined(_DEBUG) && LOG_ENABLE_DBG
-    tll_foreach(*urls, it) {
+    tll_rforeach(*urls, it) {
         if (it->item.key == NULL)
             continue;
 

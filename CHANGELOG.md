@@ -67,6 +67,14 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* URL labels are now assigned in reverse order, from bottom to
+  top. This ensures the **last** URL (which is often the one you are
+  interested in) is always assigned the same key ([#2140][2140]).
+
+[2140]: https://codeberg.org/dnkl/foot/issues/2140
+
+
 ### Deprecated
 ### Removed
 ### Fixed
