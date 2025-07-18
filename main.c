@@ -672,6 +672,7 @@ out:
     key_binding_manager_destroy(key_binding_manager);
     reaper_destroy(reaper);
     fdm_signal_del(fdm, SIGUSR1);
+    fdm_signal_del(fdm, SIGUSR2);
     fdm_signal_del(fdm, SIGTERM);
     fdm_signal_del(fdm, SIGINT);
     fdm_destroy(fdm);
