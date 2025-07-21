@@ -82,6 +82,10 @@
 ### Deprecated
 ### Removed
 ### Fixed
+
+* 10-bit surfaces sometimes used instead of 16-bit.
+
+
 ### Security
 ### Contributors
 
