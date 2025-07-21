@@ -18,6 +18,18 @@
 #include "debug.h"
 #include "xmalloc.h"
 
+#if !defined(SIGABBREV_NP)
+#include <stdio.h>
+
+static const char *
+sigabbrev_np(int sig)
+{
+    static char buf[16];
+    snprintf(buf, sizeof(buf), "<%d>", sig);
+    return buf;
+}
+#endif
+
 struct fd_handler {
     int fd;
     int events;
@@ -113,7 +125,8 @@ fdm_destroy(struct fdm *fdm)
 
     for (int i = 0; i < SIGRTMAX; i++) {
         if (fdm->signal_handlers[i].callback != NULL)
-            LOG_WARN("handler for signal %d not removed", i);
+            LOG_WARN("handler for signal %d (SIG%s) not removed",
+                     i, sigabbrev_np(i));
     }
 
     if (tll_length(fdm->hooks_low) > 0 ||
@@ -338,7 +351,8 @@ bool
 fdm_signal_add(struct fdm *fdm, int signo, fdm_signal_handler_t handler, void *data)
 {
     if (fdm->signal_handlers[signo].callback != NULL) {
-        LOG_ERR("signal %d already has a handler", signo);
+        LOG_ERR("signal %d (SIG%s) already has a handler",
+                signo, sigabbrev_np(signo));
         return false;
     }
 
@@ -347,14 +361,16 @@ fdm_signal_add(struct fdm *fdm, int signo, fdm_signal_handler_t handler, void *d
     sigaddset(&mask, signo);
 
     if (sigprocmask(SIG_BLOCK, &mask, &original) < 0) {
-        LOG_ERRNO("failed to block signal %d", signo);
+        LOG_ERRNO("failed to block signal %d (SIG%s)",
+                  signo, sigabbrev_np(signo));
         return false;
     }
 
     struct sigaction action = {.sa_handler = &signal_handler};
     sigemptyset(&action.sa_mask);
     if (sigaction(signo, &action, NULL) < 0) {
-        LOG_ERRNO("failed to set signal handler for signal %d", signo);
+        LOG_ERRNO("failed to set signal handler for signal %d (SIG%s)",
+                  signo, sigabbrev_np(signo));
         sigprocmask(SIG_SETMASK, &original, NULL);
         return false;
     }
@@ -374,7 +390,8 @@ fdm_signal_del(struct fdm *fdm, int signo)
     struct sigaction action = {.sa_handler = SIG_DFL};
     sigemptyset(&action.sa_mask);
     if (sigaction(signo, &action, NULL) < 0) {
-        LOG_ERRNO("failed to restore signal handler for signal %d", signo);
+        LOG_ERRNO("failed to restore signal handler for signal %d (SIG%s)",
+                  signo, sigabbrev_np(signo));
         return false;
     }
 
@@ -386,7 +403,8 @@ fdm_signal_del(struct fdm *fdm, int signo)
     sigemptyset(&mask);
     sigaddset(&mask, signo);
     if (sigprocmask(SIG_UNBLOCK, &mask, NULL) < 0) {
-        LOG_ERRNO("failed to unblock signal %d", signo);
+        LOG_ERRNO("failed to unblock signal %d (SIG%s)",
+                  signo, sigabbrev_np(signo));
         return false;
     }
 
