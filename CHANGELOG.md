@@ -84,6 +84,8 @@
 ### Fixed
 
 * 10-bit surfaces sometimes used instead of 16-bit.
+* OSC-104/110/111/112/117/119 (reset colors) not taking the currently
+  active theme into account.
 
 
 ### Security
