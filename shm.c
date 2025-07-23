@@ -994,7 +994,7 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
             pixman_fmt_without_alpha = PIXMAN_a16b16g16r16;
             shm_fmt_without_alpha = WL_SHM_FORMAT_XBGR16161616;
 
-            pixman_fmt_without_alpha = PIXMAN_a16b16g16r16;
+            pixman_fmt_with_alpha = PIXMAN_a16b16g16r16;
             shm_fmt_with_alpha = WL_SHM_FORMAT_ABGR16161616;
 
             if (!have_logged) {

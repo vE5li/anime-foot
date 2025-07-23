@@ -25,6 +25,12 @@ if cc.has_function('execvpe',
   add_project_arguments('-DEXECVPE', language: 'c')
 endif
 
+if cc.has_function('sigabbrev_np',
+                   args: ['-D_GNU_SOURCE'],
+                   prefix: '#include <string.h>')
+  add_project_arguments('-DSIGABBREV_NP', language: 'c')
+endif
+
 utmp_backend = get_option('utmp-backend')
 if utmp_backend == 'auto'
   host_os = host_machine.system()

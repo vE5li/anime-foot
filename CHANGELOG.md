@@ -1,5 +1,6 @@
 # Changelog
 
+* [Unreleased](#unreleased)
 * [1.23.0](#1-23-0)
 * [1.22.3](#1-22-3)
 * [1.22.2](#1-22-2)
@@ -61,6 +62,34 @@
 * [1.2.2](#1-2-2)
 * [1.2.1](#1-2-1)
 * [1.2.0](#1-2-0)
+
+
+## Unreleased
+### Added
+### Changed
+
+* URL labels are now assigned in reverse order, from bottom to
+  top. This ensures the **last** URL (which is often the one you are
+  interested in) is always assigned the same key ([#2140][2140]).
+* Sending `SIGUSR1` no longer **toggles** between `[colors]` and
+  `[colors2]`, but explicitly changes to `[colors]`. `SIGUSR2` changes
+  to `[colors2]` ([#2144][2144]).
+
+[2140]: https://codeberg.org/dnkl/foot/issues/2140
+[2144]: https://codeberg.org/dnkl/foot/issues/2144
+
+
+### Deprecated
+### Removed
+### Fixed
+
+* 10-bit surfaces sometimes used instead of 16-bit.
+* OSC-104/110/111/112/117/119 (reset colors) not taking the currently
+  active theme into account.
+
+
+### Security
+### Contributors
 
 
 ## 1.23.0

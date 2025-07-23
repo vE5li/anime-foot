@@ -1409,6 +1409,7 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
     pixman_region32_init(&term->render.last_overlay_clip);
 
     term_update_ascii_printer(term);
+    memcpy(term->colors.table, theme->table, sizeof(term->colors.table));
 
     for (size_t i = 0; i < 4; i++) {
         const struct config_font_list *font_list = &conf->fonts[i];
@@ -1442,8 +1443,6 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
      * output we'll be. Use scaling factor from first monitor */
     xassert(tll_length(term->wl->monitors) > 0);
     term->scale = tll_front(term->wl->monitors).scale;
-
-    memcpy(term->colors.table, theme->table, sizeof(term->colors.table));
 
     /* Initialize the Wayland window backend */
     if ((term->window = wayl_win_init(term, token)) == NULL)
