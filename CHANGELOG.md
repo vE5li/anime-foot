@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.23.1](#1-23-1)
 * [1.23.0](#1-23-0)
 * [1.22.3](#1-22-3)
 * [1.22.2](#1-22-2)
@@ -64,8 +64,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
-### Added
+## 1.23.1
+
 ### Changed
 
 * URL labels are now assigned in reverse order, from bottom to
@@ -79,17 +79,11 @@
 [2144]: https://codeberg.org/dnkl/foot/issues/2144
 
 
-### Deprecated
-### Removed
 ### Fixed
 
 * 10-bit surfaces sometimes used instead of 16-bit.
 * OSC-104/110/111/112/117/119 (reset colors) not taking the currently
   active theme into account.
-
-
-### Security
-### Contributors
 
 
 ## 1.23.0
