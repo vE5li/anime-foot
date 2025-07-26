@@ -436,8 +436,54 @@ slave_spawn(int ptmx, int argc, const char *cwd, char *const *argv,
         add_to_env(&custom_env, "COLORTERM", "truecolor");
         add_to_env(&custom_env, "PWD", cwd);
 
-        del_from_env(&custom_env, "TERM_PROGRAM");
-        del_from_env(&custom_env, "TERM_PROGRAM_VERSION");
+        del_from_env(&custom_env, "TERM_PROGRAM");            /* Wezterm, Ghostty */
+        del_from_env(&custom_env, "TERM_PROGRAM_VERSION");    /* Wezterm, Ghostty */
+        del_from_env(&custom_env, "TERMINAL_NAME");           /* Contour */
+        del_from_env(&custom_env, "TERMINAL_VERSION_STRING"); /* Contour */
+        del_from_env(&custom_env, "TERMINAL_VERSION_TRIPLE"); /* Contour */
+
+        /* XTerm specific */
+        del_from_env(&custom_env, "XTERM_SHELL");
+        del_from_env(&custom_env, "XTERM_VERSION");
+        del_from_env(&custom_env, "XTERM_LOCALE");
+
+        /* Mlterm specific */
+        del_from_env(&custom_env, "MLTERM");
+
+        /* Zutty specific */
+        del_from_env(&custom_env, "ZUTTY_VERSION");
+
+        /* Ghostty specific */
+        del_from_env(&custom_env, "GHOSTTY_BIN_DIR");
+        del_from_env(&custom_env, "GHOSTTY_SHELL_INTEGRATION_NO_SUDO");
+        del_from_env(&custom_env, "GHOSTTY_RESOURCES_DIR");
+
+        /* Kitty specific */
+        del_from_env(&custom_env, "KITTY_WINDOW_ID");
+        del_from_env(&custom_env, "KITTY_PID");
+        del_from_env(&custom_env, "KITTY_PUBLIC_KEY");
+        del_from_env(&custom_env, "KITTY_INSTALLATION_DIR");
+
+        /* Contour specific */
+        del_from_env(&custom_env, "CONTOUR_PROFILE");
+
+        /* Wezterm specific */
+        del_from_env(&custom_env, "WEZTERM_PANE");
+        del_from_env(&custom_env, "WEZTERM_EXECUTABLE");
+        del_from_env(&custom_env, "WEZTERM_CONFIG_FILE");
+        del_from_env(&custom_env, "WEZTERM_EXECUTABLE_DIR");
+        del_from_env(&custom_env, "WEZTERM_UNIX_SOCKET");
+        del_from_env(&custom_env, "WEZTERM_CONFIG_DIR");
+
+        /* Alacritty specific */
+        del_from_env(&custom_env, "ALACRITTY_LOG");
+        del_from_env(&custom_env, "ALACRITTY_WINDOW_ID");
+        del_from_env(&custom_env, "ALACRITTY_SOCKET");
+
+        /* VTE, gnome-terminal, kgx etc */
+        del_from_env(&custom_env, "VTE_VERSION");
+        del_from_env(&custom_env, "GNOME_TERMINAL_SERVICE");
+        del_from_env(&custom_env, "GNOME_TERMINAL_SCREEN");
 
 #if defined(FOOT_TERMINFO_PATH)
         add_to_env(&custom_env, "TERMINFO", FOOT_TERMINFO_PATH);
