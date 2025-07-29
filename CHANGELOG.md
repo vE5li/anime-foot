@@ -68,6 +68,11 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* The label letters are no longer sorted before being assigned to URLs
+  ([#2140]2140[]).
+
+
 ### Deprecated
 ### Removed
 ### Fixed

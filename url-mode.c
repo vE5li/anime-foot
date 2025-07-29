@@ -557,14 +557,6 @@ urls_collect(const struct terminal *term, enum url_action action,
     remove_overlapping(urls, term->grid->num_cols);
 }
 
-static int
-c32cmp_qsort_wrapper(const void *_a, const void *_b)
-{
-    const char32_t *a = *(const char32_t **)_a;
-    const char32_t *b = *(const char32_t **)_b;
-    return c32cmp(a, b);
-}
-
 static void
 generate_key_combos(const struct config *conf,
                     size_t count, char32_t *combos[static count])
@@ -606,10 +598,6 @@ generate_key_combos(const struct config *conf,
             free(hints[i]);
     }
     free(hints);
-
-    /* Sorting is a kind of shuffle, since we're sorting on the
-     * *reversed* strings */
-    qsort(combos, count, sizeof(char32_t *), &c32cmp_qsort_wrapper);
 
     /* Reverse all strings */
     for (size_t i = 0; i < count; i++) {
