@@ -371,7 +371,8 @@ empty string to be set, but it must be quoted: *KEY=""*)
 	
 	Use the *color-theme-switch-1*, *color-theme-switch-2* and
 	*color-theme-toggle* key bindings to switch between the two themes
-	at runtime.
+	at runtime, or send SIGUSR1/SIGUSR2 to the foot process (see
+	*foot*(1) for details).
 	
 	Default: _1_
 
@@ -1445,6 +1446,9 @@ e.g. *search-start=none*.
 	
 	*color-theme-toggle* toggles between the primary and alternative
 	color themes.
+	
+	Note: you can also send SIGUSR1/SIGUSR2 to the foot process to
+	change the theme (see *foot*(1) for details.)
 	
 	Default: _none_
 
