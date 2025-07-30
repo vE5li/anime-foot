@@ -45,23 +45,28 @@ fdm_sigint(struct fdm *fdm, int signo, void *data)
     return true;
 }
 
+struct sigusr_context {
+    struct terminal *term;
+    struct server *server;
+};
+
 static bool
 fdm_sigusr(struct fdm *fdm, int signo, void *data)
 {
-    struct wayland *wayl = data;
-
     xassert(signo == SIGUSR1 || signo == SIGUSR2);
 
-    if (signo == SIGUSR1) {
-        tll_foreach(wayl->terms, it) {
-            struct terminal *term = it->item;
-            term_theme_switch_to_1(term);
-         }
+    struct sigusr_context *ctx = data;
+
+    if (ctx->server != NULL) {
+        if (signo == SIGUSR1)
+            server_global_theme_switch_to_1(ctx->server);
+        else
+            server_global_theme_switch_to_2(ctx->server);
     } else {
-        tll_foreach(wayl->terms, it) {
-            struct terminal *term = it->item;
-            term_theme_switch_to_2(term);
-        }
+        if (signo == SIGUSR1)
+            term_theme_switch_to_1(ctx->term);
+        else
+            term_theme_switch_to_2(ctx->term);
     }
 
     return true;
@@ -630,8 +635,13 @@ main(int argc, char *const *argv)
         goto out;
     }
 
-    if (!fdm_signal_add(fdm, SIGUSR1, &fdm_sigusr, wayl) ||
-        !fdm_signal_add(fdm, SIGUSR2, &fdm_sigusr, wayl))
+    struct sigusr_context sigusr_context = {
+        .term = term,
+        .server = server,
+    };
+
+    if (!fdm_signal_add(fdm, SIGUSR1, &fdm_sigusr, &sigusr_context) ||
+        !fdm_signal_add(fdm, SIGUSR2, &fdm_sigusr, &sigusr_context))
     {
         goto out;
     }

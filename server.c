@@ -30,7 +30,7 @@ struct client;
 struct terminal_instance;
 
 struct server {
-    const struct config *conf;
+    struct config *conf;
     struct fdm *fdm;
     struct reaper *reaper;
     struct wayland *wayl;
@@ -505,7 +505,7 @@ prepare_socket(int fd)
 }
 
 struct server *
-server_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
+server_init(struct config *conf, struct fdm *fdm, struct reaper *reaper,
             struct wayland *wayl)
 {
     int fd;
@@ -616,4 +616,24 @@ server_destroy(struct server *server)
     if (server->sock_path != NULL)
         unlink(server->sock_path);
     free(server);
+}
+
+void
+server_global_theme_switch_to_1(struct server *server)
+{
+    server->conf->initial_color_theme = COLOR_THEME1;
+    tll_foreach(server->clients, it)
+        term_theme_switch_to_1(it->item->instance->terminal);
+    tll_foreach(server->terminals, it)
+        term_theme_switch_to_1(it->item->terminal);
+}
+
+void
+server_global_theme_switch_to_2(struct server *server)
+{
+    server->conf->initial_color_theme = COLOR_THEME2;
+    tll_foreach(server->clients, it)
+        term_theme_switch_to_2(it->item->instance->terminal);
+    tll_foreach(server->terminals, it)
+        term_theme_switch_to_2(it->item->terminal);
 }
