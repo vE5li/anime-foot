@@ -74,6 +74,10 @@
 * Sending SIGUSR1/SIGUSR2 to a `foot --server` process now causes
   newly spawned client instances to use the selected theme, instead of
   the original one.
+* SIGUSR1/SIGUSR2 can now be sent to `footclient` processes, to change
+  the theme of that particular instance ([#2156][2156]).
+
+[2156]: https://codeberg.org/dnkl/foot/issues/2156
 
 
 ### Deprecated

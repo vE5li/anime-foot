@@ -33,11 +33,18 @@ struct string {
 typedef tll(struct string) string_list_t;
 
 static volatile sig_atomic_t aborted = 0;
+static volatile sig_atomic_t sigusr = 0;
 
 static void
-sig_handler(int signo)
+sigint_handler(int signo)
 {
     aborted = 1;
+}
+
+static void
+sigusr_handler(int signo)
+{
+    sigusr = signo;
 }
 
 static ssize_t
@@ -507,15 +514,63 @@ main(int argc, char *const *argv)
     if (!send_string_list(fd, &envp))
         goto err;
 
-    struct sigaction sa = {.sa_handler = &sig_handler};
-    sigemptyset(&sa.sa_mask);
-    if (sigaction(SIGINT, &sa, NULL) < 0 || sigaction(SIGTERM, &sa, NULL) < 0) {
+    struct sigaction sa_int = {.sa_handler = &sigint_handler};
+    struct sigaction sa_usr = {.sa_handler = &sigusr_handler};
+    sigemptyset(&sa_int.sa_mask);
+    sigemptyset(&sa_usr.sa_mask);
+
+    if (sigaction(SIGINT, &sa_int, NULL) < 0 ||
+        sigaction(SIGTERM, &sa_int, NULL) < 0 ||
+        sigaction(SIGUSR1, &sa_usr, NULL) < 0 ||
+        sigaction(SIGUSR2, &sa_usr, NULL) < 0)
+    {
         LOG_ERRNO("failed to register signal handlers");
         goto err;
     }
 
     int exit_code;
-    ssize_t rcvd = recv(fd, &exit_code, sizeof(exit_code), 0);
+    ssize_t rcvd = -1;
+
+    while (true) {
+        rcvd = recv(fd, &exit_code, sizeof(exit_code), 0);
+
+        const int got_sigusr = sigusr;
+        sigusr = 0;
+
+        if (rcvd < 0 && errno == EINTR) {
+            if (aborted)
+                break;
+            else if (got_sigusr != 0) {
+                LOG_DBG("sending sigusr %d to server", got_sigusr);
+
+                struct {
+                    struct client_ipc_hdr hdr;
+                    struct client_ipc_sigusr sigusr;
+                } ipc = {
+                    .hdr = {
+                        .ipc_code = FOOT_IPC_SIGUSR,
+                        .size = sizeof(struct client_ipc_sigusr),
+                    },
+                    .sigusr = {
+                        .signo = got_sigusr,
+                    },
+                };
+
+                ssize_t count = send(fd, &ipc, sizeof(ipc), 0);
+                if (count < 0) {
+                    LOG_ERRNO("failed to send SIGUSR IPC to server");
+                    goto err;
+                } else if ((size_t)count != sizeof(ipc)) {
+                    LOG_ERR("failed to send SIGUSR IPC to server");
+                    goto err;
+                }
+            }
+
+            continue;
+        }
+
+        break;
+    }
 
     if (rcvd == -1 && errno == EINTR)
         xassert(aborted);

@@ -29,3 +29,17 @@ struct client_data {
 } __attribute__((packed));
 
 _Static_assert(sizeof(struct client_data) == 10, "protocol struct size error");
+
+enum client_ipc_code {
+    FOOT_IPC_SIGUSR,
+};
+
+struct client_ipc_hdr {
+    enum client_ipc_code ipc_code;
+    uint8_t size;
+} __attribute__((packed));
+
+
+struct client_ipc_sigusr {
+    int signo;
+} __attribute__((packed));

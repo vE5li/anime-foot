@@ -189,6 +189,21 @@ variables may be defined in *foot.ini*(5).
 In addition to the variables listed above, custom environment
 variables to unset may be defined in *foot.ini*(5).
 
+# Signals
+
+The following signals have special meaning in footclient:
+
+- SIGUSR1: switch to color theme 1 (i.e. use the *[colors]* section).
+- SIGUSR2: switch to color theme 2 (i.e. use the *[colors2]* section).
+
+When sending SIGUSR1/SIGUSR2 to a footclient instance, the theme is
+changed in that instance only. This is different from when you send
+SIGUSR1/SIGUSR2 to the server process, where all instances change the
+theme.
+
+Note: for obvious reasons, this is not supported when footclient is
+started with *--no-wait*.
+
 # SEE ALSO
 
 *foot*(1)

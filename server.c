@@ -156,10 +156,61 @@ fdm_client(struct fdm *fdm, int fd, int events, void *data)
     xassert(events & EPOLLIN);
 
     if (client->instance != NULL) {
-        uint8_t dummy[128];
-        ssize_t count = read(fd, dummy, sizeof(dummy));
-        LOG_WARN("client unexpectedly sent %zd bytes", count);
-        return true;  /* TODO: shutdown instead? */
+        struct client_ipc_hdr ipc_hdr;
+        ssize_t count = read(fd, &ipc_hdr, sizeof(ipc_hdr));
+
+        if (count != sizeof(ipc_hdr)) {
+            LOG_WARN("client unexpectedly sent %zd bytes", count);
+            return true;  /* TODO: shutdown instead? */
+        }
+
+        switch (ipc_hdr.ipc_code) {
+        case FOOT_IPC_SIGUSR: {
+            xassert(ipc_hdr.size == sizeof(struct client_ipc_sigusr));
+
+            struct client_ipc_sigusr sigusr;
+            count = read(fd, &sigusr, sizeof(sigusr));
+            if (count < 0) {
+                LOG_ERRNO("failed to read SIGUSR IPC data from client");
+                return true; /* TODO: shutdown instead? */
+            }
+
+            if ((size_t)count != sizeof(sigusr)) {
+                LOG_ERR("failed to read SIGUSR IPC data from client");
+                return true; /* TODO: shutdown instead? */
+            }
+
+            switch (sigusr.signo) {
+            case SIGUSR1:
+                term_theme_switch_to_1(client->instance->terminal);
+                break;
+
+            case SIGUSR2:
+                term_theme_switch_to_2(client->instance->terminal);
+                break;
+
+            default:
+                LOG_ERR(
+                    "client sent bad SIGUSR number: %d "
+                    "(expected SIGUSR1=%d or SIGUSR2=%d)",
+                    sigusr.signo, SIGUSR1, SIGUSR2);
+                break;
+            }
+
+            return true;
+        }
+
+        default:
+            LOG_WARN(
+                "client sent unrecognized IPC (0x%04x), ignoring %hhu bytes",
+                ipc_hdr.ipc_code, ipc_hdr.size);
+
+            /* TODO: slightly broken, since not all data is guaranteed
+               to be readable yet */
+            uint8_t dummy[ipc_hdr.size];
+            read(fd, dummy, ipc_hdr.size);
+            return true;
+        }
     }
 
     if (client->buffer.data == NULL) {
