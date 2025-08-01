@@ -208,7 +208,7 @@ fdm_client(struct fdm *fdm, int fd, int events, void *data)
             /* TODO: slightly broken, since not all data is guaranteed
                to be readable yet */
             uint8_t dummy[ipc_hdr.size];
-            read(fd, dummy, ipc_hdr.size);
+            (void)!!read(fd, dummy, ipc_hdr.size);
             return true;
         }
     }
