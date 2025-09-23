@@ -1018,6 +1018,17 @@ render_cell(struct terminal *term, pixman_image_t *pix,
         PIXMAN_OP_SRC, pix, &bg, 1,
         &(pixman_rectangle16_t){x, y, cell_cols * width, height});
 
+    pixman_image_composite32(
+        PIXMAN_OP_ADD,  // or PIXMAN_OP_SRC
+        term->anime_girl_chunks[row_no * term->cols + col],// src
+        NULL,            // mask
+        pix,             // dest
+        0, 0,            // src_x, src_y
+        0, 0,            // mask_x, mask_y
+        x, y,            // dest_x, dest_y (where to render)
+        term->cell_width, term->cell_height    // width, height of region to copy
+    );
+
     if (cell->attrs.blink && term->blink.fd < 0) {
         /* TODO: use a custom lock for this? */
         mtx_lock(&term->render.workers.lock);
@@ -3321,6 +3332,16 @@ grid_render(struct terminal *term)
             break;
         }
 
+        // Mark all rows and cells as dirty.
+        for (int r = it->item.region.start; r < it->item.region.end; r++) {
+            struct row *row = grid_row_in_view(term->grid, r);
+            row->dirty = true;
+
+            for (int c = 0; c < term->cols; c++) {
+                row->cells[c].attrs.clean = 0;
+            }
+        }
+
         tll_remove(term->grid->scroll_damage, it);
     }
 
@@ -4793,6 +4814,8 @@ render_resize(struct terminal *term, int width, int height, uint8_t opts)
 
     term->cols = new_cols;
     term->rows = new_rows;
+
+    term_chunk_anime_girl(term);
 
     sixel_reflow(term);
 

@@ -589,6 +589,11 @@ struct terminal {
     int cell_width;  /* pixels per cell, x-wise */
     int cell_height; /* pixels per cell, y-wise */
 
+    unsigned int *anime_girl_data;
+    int anime_girl_width;
+    // Array of pointers to the chunks.
+    pixman_image_t **anime_girl_chunks;
+
     struct colors colors;
 
     struct {
@@ -987,6 +992,8 @@ void term_send_size_notification(struct terminal *term);
 void term_theme_switch_to_1(struct terminal *term);
 void term_theme_switch_to_2(struct terminal *term);
 void term_theme_toggle(struct terminal *term);
+
+void term_chunk_anime_girl(struct terminal *term);
 
 static inline void term_reset_grapheme_state(struct terminal *term)
 {

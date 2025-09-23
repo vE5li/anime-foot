@@ -46,6 +46,13 @@
 #include "vt.h"
 #include "xmalloc.h"
 #include "xsnprintf.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#include "anime_girls/anime_girl_1.h"
+#include "anime_girls/anime_girl_2.h"
+#include "anime_girls/anime_girl_3.h"
+#include "anime_girls/anime_girl_4.h"
+#include "anime_girls/anime_girl_5.h"
 
 #define PTMX_TIMING 0
 
@@ -804,6 +811,98 @@ term_line_height_update(struct terminal *term)
     term->font_line_height.pt = fmaxf(line_original_pt_size * change, 0.);
 }
 
+bool
+term_load_anime_girl_data(struct terminal *term)
+{
+    unsigned char *possible_images[] = {
+        anime_girl_1_jpg,
+        anime_girl_2_jpg,
+        anime_girl_3_jpg,
+        anime_girl_4_jpg,
+        anime_girl_5_jpg,
+    };
+    unsigned int possible_image_lengths[] = {
+        anime_girl_1_jpg_len,
+        anime_girl_2_jpg_len,
+        anime_girl_3_jpg_len,
+        anime_girl_4_jpg_len,
+        anime_girl_5_jpg_len,
+    };
+    unsigned int random_chosen_image = rand() % (sizeof(possible_image_lengths) / sizeof(unsigned int));
+
+    int img_width, img_height, img_channels;
+    unsigned char *image_data = stbi_load_from_memory(
+            possible_images[random_chosen_image],
+            possible_image_lengths[random_chosen_image],
+            &img_width,
+            &img_height,
+            &img_channels,
+            4
+    );
+
+    if (!image_data) {
+        LOG_ERRNO("Failed to load anime girl");
+        return false;
+    }
+
+    unsigned int *anime_girl_data = malloc(img_width * img_height * sizeof(unsigned int));
+
+    if (!anime_girl_data) {
+        LOG_ERRNO("Failed to allocate anime girl");
+        return false;
+    }
+
+    // Convert to unsigned int array (RGBA -> uint32)
+    for (int pixel = 0; pixel < img_width * img_height; pixel++) {
+        anime_girl_data[pixel] = (image_data[pixel * 4 + 0] / 16 << 16) |   // Red
+            (image_data[pixel * 4 + 1] / 16 << 8) |    // Green
+            (image_data[pixel * 4 + 2] / 16);          // Blue
+    }
+
+    term->anime_girl_data = anime_girl_data;
+    term->anime_girl_width = img_width;
+
+    return true;
+}
+
+void
+term_chunk_anime_girl(struct terminal *term)
+{
+    // TODO: Free before calling malloc if the pointer is not NULL;
+
+    int chunk_count = term->rows * term->cols;
+    term->anime_girl_chunks = malloc(chunk_count * sizeof(pixman_image_t *));
+
+    if (!term->anime_girl_chunks) {
+        LOG_ERRNO("Failed to allocate memory for anime girl chunks");
+    }
+
+    int width = term->cell_width;
+    int height = term->cell_height;
+    int anime_girl_width = term->anime_girl_width;
+    int left_offset = (anime_girl_width - term->cell_width * term->cols) / 2;
+
+    if (left_offset < 0)
+        left_offset = 0;
+
+    for (int y = 0; y < term->rows; y++) {
+        for (int x = 0; x < term->cols; x++) {
+            unsigned int *chunk_data = term->anime_girl_data + left_offset + ((y * height) * anime_girl_width + (x * width));
+
+            term->anime_girl_chunks[y * term->cols + x] = pixman_image_create_bits(
+                PIXMAN_a8r8g8b8,
+                width,
+                height,
+                chunk_data,
+                anime_girl_width * 4
+            );
+        }
+    }
+
+    // FIX: Do this somewhere
+    //pixman_image_unref(renderer->anime_girl);
+}
+
 static bool
 term_set_fonts(struct terminal *term, struct fcft_font *fonts[static 4],
                bool resize_grid)
@@ -1450,6 +1549,9 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
 
     /* Load fonts */
     if (!term_font_dpi_changed(term, 0.))
+        goto err;
+
+    if (!term_load_anime_girl_data(term))
         goto err;
 
     term->font_subpixel = get_font_subpixel(term);
