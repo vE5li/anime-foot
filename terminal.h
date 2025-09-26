@@ -593,6 +593,7 @@ struct terminal {
     int anime_girl_width;
     // Array of pointers to the chunks.
     pixman_image_t **anime_girl_chunks;
+    int anime_girl_chunk_count;
 
     struct colors colors;
 

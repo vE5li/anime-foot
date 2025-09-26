@@ -814,6 +814,7 @@ term_line_height_update(struct terminal *term)
 bool
 term_load_anime_girl_data(struct terminal *term)
 {
+    // TODO: generate this from the nix config
     unsigned char *possible_images[] = {
         anime_girl_1_jpg,
         anime_girl_2_jpg,
@@ -868,7 +869,13 @@ term_load_anime_girl_data(struct terminal *term)
 void
 term_chunk_anime_girl(struct terminal *term)
 {
-    // TODO: Free before calling malloc if the pointer is not NULL;
+    if (term->anime_girl_chunks != NULL) {
+        for (int i = 0; i < term->anime_girl_chunk_count; i++) {
+            pixman_image_unref(term->anime_girl_chunks[i]);
+        }
+
+        free(term->anime_girl_chunks);
+    }
 
     int chunk_count = term->rows * term->cols;
     term->anime_girl_chunks = malloc(chunk_count * sizeof(pixman_image_t *));
@@ -876,6 +883,8 @@ term_chunk_anime_girl(struct terminal *term)
     if (!term->anime_girl_chunks) {
         LOG_ERRNO("Failed to allocate memory for anime girl chunks");
     }
+
+    term->anime_girl_chunk_count = chunk_count;
 
     int width = term->cell_width;
     int height = term->cell_height;
@@ -898,9 +907,6 @@ term_chunk_anime_girl(struct terminal *term)
             );
         }
     }
-
-    // FIX: Do this somewhere
-    //pixman_image_unref(renderer->anime_girl);
 }
 
 static bool
@@ -1503,6 +1509,7 @@ term_init(const struct config *conf, struct fdm *fdm, struct reaper *reaper,
         .ime_enabled = true,
 #endif
         .active_notifications = tll_init(),
+        .anime_girl_chunks = NULL,
     };
 
     pixman_region32_init(&term->render.last_overlay_clip);
