@@ -1020,7 +1020,7 @@ render_cell(struct terminal *term, pixman_image_t *pix,
 
     pixman_image_composite32(
         PIXMAN_OP_ADD,  // or PIXMAN_OP_SRC
-        term->anime_girl_chunks[row_no * term->cols + col],// src
+        term->niku_chunks[row_no * term->cols + col],// src
         NULL,            // mask
         pix,             // dest
         0, 0,            // src_x, src_y
@@ -4815,7 +4815,7 @@ render_resize(struct terminal *term, int width, int height, uint8_t opts)
     term->cols = new_cols;
     term->rows = new_rows;
 
-    term_chunk_anime_girl(term);
+    term_chunk_niku(term);
 
     sixel_reflow(term);
 

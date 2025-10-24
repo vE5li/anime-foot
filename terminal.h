@@ -589,11 +589,12 @@ struct terminal {
     int cell_width;  /* pixels per cell, x-wise */
     int cell_height; /* pixels per cell, y-wise */
 
-    unsigned int *anime_girl_data;
-    int anime_girl_width;
+    unsigned int *niku_data;
+    int niku_width;
+    int niku_height;
     // Array of pointers to the chunks.
-    pixman_image_t **anime_girl_chunks;
-    int anime_girl_chunk_count;
+    pixman_image_t **niku_chunks;
+    int niku_chunk_count;
 
     struct colors colors;
 
@@ -994,7 +995,7 @@ void term_theme_switch_to_1(struct terminal *term);
 void term_theme_switch_to_2(struct terminal *term);
 void term_theme_toggle(struct terminal *term);
 
-void term_chunk_anime_girl(struct terminal *term);
+void term_chunk_niku(struct terminal *term);
 
 static inline void term_reset_grapheme_state(struct terminal *term)
 {
